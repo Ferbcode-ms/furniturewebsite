@@ -1,0 +1,588 @@
+"use client";
+import useSWR from "swr";
+import Container from "@/components/ui/Container";
+import Skeleton from "@/components/ui/Skeleton";
+import { useState } from "react";
+import { toast } from "sonner";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+export default function AdminOrdersPage() {
+  const { data, error, isLoading, mutate } = useSWR(
+    "/api/admin/orders",
+    fetcher
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<"all" | "today">("all");
+
+  function toCsvValue(value: any) {
+    if (value === null || value === undefined) return "";
+    const str = String(value);
+    if (/[",\n]/.test(str)) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  }
+
+  function buildOrdersCsv(orders: any[]) {
+    const header = [
+      "Order ID",
+      "Status",
+      "Customer Name",
+      "Email",
+      "Phone",
+      "Items",
+      "Subtotal",
+      "Shipping",
+      "Total",
+      "Created",
+      "Address",
+    ];
+    const rows = orders.map((o) => {
+      const c = o.customer || {};
+      const address = [
+        [c.addressLine1, c.addressLine2].filter(Boolean).join(" "),
+        [c.city, c.state, c.postalCode, c.country].filter(Boolean).join(", "),
+      ]
+        .filter(Boolean)
+        .join(" | ");
+      return [
+        o._id,
+        o.status || "pending",
+        c.fullName || "",
+        c.email || o.userEmail || "",
+        c.phone || "",
+        Array.isArray(o.items) ? o.items.length : 0,
+        o.totals?.subtotal ?? "",
+        o.totals?.shipping ?? "",
+        o.totals?.grandTotal ?? o.total ?? "",
+        new Date(o.createdAt).toLocaleString(),
+        address,
+      ];
+    });
+    const csv = [header, ...rows]
+      .map((r: any[]) => r.map((v: any) => toCsvValue(v)).join(","))
+      .join("\n");
+    return csv;
+  }
+
+  function downloadCsvFor(orders: any[], filename: string) {
+    const csv = buildOrdersCsv(orders);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function buildLineItemsCsv(orders: any[]) {
+    const header = [
+      "Order ID",
+      "Status",
+      "Created",
+      "Customer Name",
+      "Email",
+      "Phone",
+      "Item Name",
+      "Item Price",
+      "Quantity",
+      "Line Total",
+    ];
+    const rows: any[] = [];
+    for (const o of orders) {
+      const c = o.customer || {};
+      for (const it of o.items || []) {
+        rows.push([
+          o._id,
+          o.status || "pending",
+          new Date(o.createdAt).toLocaleString(),
+          c.fullName || "",
+          c.email || o.userEmail || "",
+          c.phone || "",
+          it.name,
+          Number(it.price).toFixed(2),
+          it.quantity,
+          (Number(it.price) * Number(it.quantity)).toFixed(2),
+        ]);
+      }
+      if (!o.items || o.items.length === 0) {
+        rows.push([
+          o._id,
+          o.status || "pending",
+          new Date(o.createdAt).toLocaleString(),
+          c.fullName || "",
+          c.email || o.userEmail || "",
+          c.phone || "",
+          "",
+          "",
+          "0",
+          "0.00",
+        ]);
+      }
+    }
+    const csv = [header, ...rows]
+      .map((r: any[]) => r.map((v: any) => toCsvValue(v)).join(","))
+      .join("\n");
+    return csv;
+  }
+
+  function downloadItemsCsvFor(orders: any[], filename: string) {
+    const csv = buildLineItemsCsv(orders);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function printInvoice(o: any) {
+    if (!o) return;
+    const customer = o.customer || {};
+    const itemsRows = (o.items || [])
+      .map(
+        (it: any, idx: number) => `
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #eee">${idx + 1}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">${it.name}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${
+              it.quantity
+            }</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">$${Number(
+              it.price
+            ).toFixed(2)}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">$${(
+              Number(it.price) * Number(it.quantity)
+            ).toFixed(2)}</td>
+          </tr>`
+      )
+      .join("");
+
+    const subtotal =
+      o.totals?.subtotal ??
+      (o.items || []).reduce(
+        (s: number, it: any) => s + Number(it.price) * Number(it.quantity),
+        0
+      );
+    const shipping = o.totals?.shipping ?? 0;
+    const grand = o.totals?.grandTotal ?? o.total ?? subtotal + shipping;
+
+    const win = window.open("", "PRINT", "width=900,height=650");
+    if (!win) return;
+    win.document.write(`
+      <html>
+        <head>
+          <title>Invoice ${o._id}</title>
+          <style>
+            body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;color:#111}
+            .container{max-width:800px;margin:24px auto;padding:0 16px}
+            .muted{color:#666}
+            .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+            table{width:100%;border-collapse:collapse;margin-top:12px}
+            h1,h2,h3{margin:0}
+            .totals td{padding:6px}
+            @media print{.no-print{display:none}}
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div>
+                <h1>Invoice</h1>
+                <div class="muted">Order ID: ${o._id}</div>
+                <div class="muted">Status: ${o.status || "pending"}</div>
+              </div>
+              <div style="text-align:right">
+                <div><strong>Furniture Store</strong></div>
+                <div class="muted">${new Date(
+                  o.createdAt
+                ).toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div class="grid" style="margin-top:16px">
+              <div>
+                <h3>Bill To</h3>
+                <div>${customer.fullName || "-"}</div>
+                <div class="muted">${customer.email || o.userEmail || "-"}</div>
+                <div class="muted">${customer.phone || ""}</div>
+                <div class="muted">${[
+                  customer.addressLine1,
+                  customer.addressLine2,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}</div>
+                <div class="muted">${[
+                  customer.city,
+                  customer.state,
+                  customer.postalCode,
+                  customer.country,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}</div>
+              </div>
+              <div>
+                <h3>Summary</h3>
+                <table>
+                  <tbody class="totals">
+                    <tr><td>Subtotal</td><td style="text-align:right">$${Number(
+                      subtotal
+                    ).toFixed(2)}</td></tr>
+                    <tr><td>Shipping</td><td style="text-align:right">$${Number(
+                      shipping
+                    ).toFixed(2)}</td></tr>
+                    <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>$${Number(
+                      grand
+                    ).toFixed(2)}</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <h3 style="margin-top:24px">Items</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:8px;border-bottom:1px solid #ccc">#</th>
+                  <th style="text-align:left;padding:8px;border-bottom:1px solid #ccc">Product</th>
+                  <th style="text-align:center;padding:8px;border-bottom:1px solid #ccc">Qty</th>
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid #ccc">Price</th>
+                  <th style="text-align:right;padding:8px;border-bottom:1px solid #ccc">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsRows}
+              </tbody>
+            </table>
+
+            <p class="muted" style="margin-top:24px">Thank you for your purchase.</p>
+          </div>
+          <script>window.onload = function(){ window.print(); }<\/script>
+        </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+  }
+
+  return (
+    <Container className="pt-10">
+      <h1 className="text-3xl font-extrabold tracking-tight">Orders</h1>
+      {isLoading && (
+        <div className="mt-4 space-y-3">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-10 w-full" />
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        </div>
+      )}
+      {error && (
+        <p className="mt-4 text-sm text-red-600">Failed to load orders</p>
+      )}
+      {data && (
+        <div className="mt-6 flex flex-col md:flex-row gap-6">
+          {/* Left: Orders table */}
+          <div className="flex-[2] min-w-0 h-[70vh] md:h-[calc(100vh-200px)] overflow-auto">
+            {/* Filters */}
+            <div className="mb-3 flex items-center gap-2 flex-wrap">
+              <button
+                className={`px-3 py-1 rounded-full border text-xs cursor-pointer ${
+                  dateFilter === "all"
+                    ? "bg-black text-white border-black"
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() => setDateFilter("all")}
+              >
+                All
+              </button>
+              <button
+                className={`px-3 py-1 rounded-full border text-xs cursor-pointer ${
+                  dateFilter === "today"
+                    ? "bg-black text-white border-black"
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() => setDateFilter("today")}
+              >
+                Today
+              </button>
+              <div className="mx-2 h-5 w-px bg-neutral-200" />
+              <button
+                className="px-3 py-1 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  const now = new Date();
+                  const todayPending = (data.orders || []).filter((o: any) => {
+                    const created = new Date(o.createdAt);
+                    const isToday =
+                      created.getFullYear() === now.getFullYear() &&
+                      created.getMonth() === now.getMonth() &&
+                      created.getDate() === now.getDate();
+                    return isToday && (o.status || "pending") === "pending";
+                  });
+                  downloadItemsCsvFor(
+                    todayPending,
+                    `orders_today_pending_items_${Date.now()}.csv`
+                  );
+                }}
+              >
+                Download Today Pending Items
+              </button>
+              <button
+                className="px-3 py-1 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  const filtered = (data.orders || []).filter((o: any) => {
+                    if (dateFilter === "all") return true;
+                    const created = new Date(o.createdAt);
+                    const now = new Date();
+                    return (
+                      created.getFullYear() === now.getFullYear() &&
+                      created.getMonth() === now.getMonth() &&
+                      created.getDate() === now.getDate()
+                    );
+                  });
+                  downloadItemsCsvFor(
+                    filtered,
+                    `orders_items_${dateFilter}_${Date.now()}.csv`
+                  );
+                }}
+              >
+                Download Items CSV (current view)
+              </button>
+            </div>
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left border-b">
+                  <th className="py-2 pr-4">Order ID</th>
+                  <th className="py-2 pr-4">Customer</th>
+                  <th className="py-2 pr-4">Email</th>
+                  <th className="py-2 pr-4">Items</th>
+                  <th className="py-2 pr-4">Status</th>
+                  <th className="py-2 pr-4">Total</th>
+                  <th className="py-2 pr-4">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.orders
+                  ?.filter((o: any) => {
+                    if (dateFilter === "all") return true;
+                    const created = new Date(o.createdAt);
+                    const now = new Date();
+                    return (
+                      created.getFullYear() === now.getFullYear() &&
+                      created.getMonth() === now.getMonth() &&
+                      created.getDate() === now.getDate()
+                    );
+                  })
+                  .map((o: any) => (
+                    <tr
+                      key={o._id}
+                      className={`border-b last:border-0 cursor-pointer hover:bg-gray-50 ${
+                        selectedId === o._id ? "bg-gray-50" : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedId((prev) => (prev === o._id ? null : o._id))
+                      }
+                    >
+                      <td className="py-2 pr-4">{o._id}</td>
+                      <td className="py-2 pr-4">
+                        {o.customer?.fullName || "-"}
+                      </td>
+                      <td className="py-2 pr-4">
+                        {o.userEmail || o.customer?.email || "-"}
+                      </td>
+                      <td className="py-2 pr-4">{o.items?.length ?? 0}</td>
+                      <td className="py-2 pr-4">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs border ${
+                            o.status === "forward"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                          }`}
+                        >
+                          {o.status || "pending"}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-4">
+                        ${o.total?.toFixed?.(2) || "-"}
+                      </td>
+                      <td className="py-2 pr-4">
+                        {new Date(o.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Right: Details panel */}
+          <div className="flex-[1] md:sticky md:top-20 self-start max-h-[70vh] md:max-h-[calc(100vh-200px)] overflow-auto">
+            {selectedId ? (
+              (() => {
+                const o = data.orders.find((x: any) => x._id === selectedId);
+                if (!o) return null;
+                const customer = o.customer || {};
+                return (
+                  <div className="grid gap-6">
+                    <div className="rounded-xl border p-4 bg-white">
+                      <h2 className="font-semibold mb-3">Customer</h2>
+                      <div className="text-sm space-y-1">
+                        <div>
+                          <span className="text-neutral-500">Name:</span>{" "}
+                          {customer.fullName || "-"}
+                        </div>
+                        <div>
+                          <span className="text-neutral-500">Email:</span>{" "}
+                          {customer.email || o.userEmail || "-"}
+                        </div>
+                        <div>
+                          <span className="text-neutral-500">Phone:</span>{" "}
+                          {customer.phone || "-"}
+                        </div>
+                        <div className="mt-2">
+                          <span className="text-neutral-500">Address:</span>
+                          <div className="mt-1">
+                            {[customer.addressLine1, customer.addressLine2]
+                              .filter(Boolean)
+                              .join(" ") || "-"}
+                          </div>
+                          <div>
+                            {[
+                              customer.city,
+                              customer.state,
+                              customer.postalCode,
+                              customer.country,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </div>
+                        </div>
+                        {false && customer.companyName && (
+                          <div className="mt-2">
+                            <span className="text-neutral-500">Company:</span>{" "}
+                            {customer.companyName}
+                          </div>
+                        )}
+                        {false && customer.gstVat && (
+                          <div>
+                            <span className="text-neutral-500">GST/VAT:</span>{" "}
+                            {customer.gstVat}
+                          </div>
+                        )}
+                        {customer.notes && (
+                          <div className="mt-2">
+                            <span className="text-neutral-500">Notes:</span>{" "}
+                            {customer.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rounded-xl border p-4 bg-white">
+                      <h2 className="font-semibold mb-3">Items</h2>
+                      <div className="rounded-xl border p-4 bg-white">
+                        <h2 className="font-semibold mb-3">Status & Actions</h2>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <select
+                            className="rounded-lg border px-3 py-2 text-sm cursor-pointer"
+                            value={o.status || "pending"}
+                            onChange={async (e) => {
+                              const status = e.target.value;
+                              try {
+                                const res = await fetch("/api/admin/orders", {
+                                  method: "PUT",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ id: o._id, status }),
+                                });
+                                if (!res.ok) throw new Error("Update failed");
+                                toast.success("Order status updated");
+                                await mutate();
+                              } catch (err: any) {
+                                toast.error(err?.message || "Update failed");
+                              }
+                            }}
+                          >
+                            <option value="pending">pending</option>
+                            <option value="forward">forward</option>
+                          </select>
+                          <button
+                            className="rounded-full border px-3 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
+                            onClick={() => printInvoice(o)}
+                          >
+                            Print Invoice
+                          </button>
+                        </div>
+                      </div>
+                      <div className="divide-y">
+                        {o.items?.map((it: any) => (
+                          <div
+                            key={it.id}
+                            className="py-3 flex items-center gap-3"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={it.image}
+                              alt={it.name}
+                              className="h-12 w-12 rounded-lg object-cover border"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">
+                                {it.name}
+                              </div>
+                              <div className="text-xs text-neutral-600">
+                                Qty: {it.quantity}
+                              </div>
+                            </div>
+                            <div className="text-sm font-medium w-20 text-right">
+                              ${(it.price * it.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-sm">
+                        <div className="flex justify-between">
+                          <span>Subtotal</span>
+                          <span>
+                            ${o.totals?.subtotal?.toFixed?.(2) || "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Shipping</span>
+                          <span>
+                            ${o.totals?.shipping?.toFixed?.(2) || "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-semibold text-base">
+                          <span>Total</span>
+                          <span>
+                            $
+                            {o.totals?.grandTotal?.toFixed?.(2) ||
+                              o.total?.toFixed?.(2) ||
+                              "-"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : (
+              <div className="rounded-xl border p-6 bg-white text-sm text-neutral-600">
+                Select an order to view details.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Container>
+  );
+}
