@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import Container from "@/components/ui/Container";
 import Skeleton from "@/components/ui/Skeleton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -14,6 +14,33 @@ export default function AdminOrdersPage() {
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<"all" | "today">("all");
+
+  // Filter orders based on current filter
+  const filteredOrders =
+    data?.orders?.filter((o: any) => {
+      if (dateFilter === "all") return true;
+      const created = new Date(o.createdAt);
+      const now = new Date();
+      return (
+        created.getFullYear() === now.getFullYear() &&
+        created.getMonth() === now.getMonth() &&
+        created.getDate() === now.getDate()
+      );
+    }) || [];
+
+  // Clear selected order if it's not in the filtered results
+  useEffect(() => {
+    if (selectedId && !filteredOrders.some((o: any) => o._id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [selectedId, filteredOrders]);
+
+  // Handle filter change
+  const handleFilterChange = (newFilter: "all" | "today") => {
+    setDateFilter(newFilter);
+    // Clear selection when changing filters
+    setSelectedId(null);
+  };
 
   function toCsvValue(value: any) {
     if (value === null || value === undefined) return "";
@@ -273,8 +300,10 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <Container className="pt-10">
-      <h1 className="text-3xl font-extrabold tracking-tight">Orders</h1>
+    <Container className="pt-6 sm:pt-8 lg:pt-10">
+      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        Orders
+      </h1>
       {isLoading && (
         <div className="mt-4 space-y-3">
           <Skeleton className="h-7 w-40" />
@@ -290,43 +319,38 @@ export default function AdminOrdersPage() {
         <p className="mt-4 text-sm text-red-600">Failed to load orders</p>
       )}
       {data && (
-        <div className="mt-6 flex flex-col md:flex-row gap-6">
+        <div className="mt-4 sm:mt-6 flex flex-col lg:flex-row gap-4 sm:gap-6">
           {/* Left: Orders table */}
-          <div className="flex-[2] min-w-0 h-[70vh] md:h-[calc(100vh-200px)] overflow-auto">
+          <div className="flex-[2] min-w-0 h-[60vh] sm:h-[70vh] lg:h-[calc(100vh-200px)] overflow-auto">
             {/* Filters */}
             <div className="mb-3 flex items-center gap-2 flex-wrap">
               <button
-                className={`px-3 py-1 rounded-full border text-xs cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer ${
                   dateFilter === "all"
                     ? "bg-black text-white border-black"
                     : "hover:bg-gray-100"
                 }`}
-                onClick={() => setDateFilter("all")}
+                onClick={() => handleFilterChange("all")}
               >
                 All
               </button>
               <button
-                className={`px-3 py-1 rounded-full border text-xs cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer ${
                   dateFilter === "today"
                     ? "bg-black text-white border-black"
                     : "hover:bg-gray-100"
                 }`}
-                onClick={() => setDateFilter("today")}
+                onClick={() => handleFilterChange("today")}
               >
                 Today
               </button>
               <div className="mx-2 h-5 w-px bg-neutral-200" />
               <button
-                className="px-3 py-1 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+                className="px-3 py-1.5 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
                   const now = new Date();
-                  const todayPending = (data.orders || []).filter((o: any) => {
-                    const created = new Date(o.createdAt);
-                    const isToday =
-                      created.getFullYear() === now.getFullYear() &&
-                      created.getMonth() === now.getMonth() &&
-                      created.getDate() === now.getDate();
-                    return isToday && (o.status || "pending") === "pending";
+                  const todayPending = filteredOrders.filter((o: any) => {
+                    return (o.status || "pending") === "pending";
                   });
                   downloadItemsCsvFor(
                     todayPending,
@@ -337,20 +361,10 @@ export default function AdminOrdersPage() {
                 Download Today Pending Items
               </button>
               <button
-                className="px-3 py-1 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+                className="px-3 py-1.5 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
-                  const filtered = (data.orders || []).filter((o: any) => {
-                    if (dateFilter === "all") return true;
-                    const created = new Date(o.createdAt);
-                    const now = new Date();
-                    return (
-                      created.getFullYear() === now.getFullYear() &&
-                      created.getMonth() === now.getMonth() &&
-                      created.getDate() === now.getDate()
-                    );
-                  });
                   downloadItemsCsvFor(
-                    filtered,
+                    filteredOrders,
                     `orders_items_${dateFilter}_${Date.now()}.csv`
                   );
                 }}
@@ -358,31 +372,27 @@ export default function AdminOrdersPage() {
                 Download Items CSV (current view)
               </button>
             </div>
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left border-b">
-                  <th className="py-2 pr-4">Order ID</th>
-                  <th className="py-2 pr-4">Customer</th>
-                  <th className="py-2 pr-4">Email</th>
-                  <th className="py-2 pr-4">Items</th>
-                  <th className="py-2 pr-4">Status</th>
-                  <th className="py-2 pr-4">Total</th>
-                  <th className="py-2 pr-4">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.orders
-                  ?.filter((o: any) => {
-                    if (dateFilter === "all") return true;
-                    const created = new Date(o.createdAt);
-                    const now = new Date();
-                    return (
-                      created.getFullYear() === now.getFullYear() &&
-                      created.getMonth() === now.getMonth() &&
-                      created.getDate() === now.getDate()
-                    );
-                  })
-                  .map((o: any) => (
+            <div className="overflow-auto max-h-[50vh] sm:max-h-[60vh] lg:max-h-[calc(100vh-200px)]">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-2 pr-2 sm:pr-4">Order ID</th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
+                      Customer
+                    </th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                      Email
+                    </th>
+                    <th className="py-2 pr-2 sm:pr-4">Items</th>
+                    <th className="py-2 pr-2 sm:pr-4">Status</th>
+                    <th className="py-2 pr-2 sm:pr-4">Total</th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                      Created
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((o: any) => (
                     <tr
                       key={o._id}
                       className={`border-b last:border-0 cursor-pointer hover:bg-gray-50 ${
@@ -392,15 +402,28 @@ export default function AdminOrdersPage() {
                         setSelectedId((prev) => (prev === o._id ? null : o._id))
                       }
                     >
-                      <td className="py-2 pr-4">{o._id}</td>
-                      <td className="py-2 pr-4">
+                      <td className="py-2 pr-2 sm:pr-4">
+                        <div className="text-xs sm:text-sm font-mono">
+                          {o._id.slice(-8)}
+                        </div>
+                        <div className="text-xs text-gray-500 sm:hidden">
+                          {o.customer?.fullName || "-"}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                         {o.customer?.fullName || "-"}
                       </td>
-                      <td className="py-2 pr-4">
-                        {o.userEmail || o.customer?.email || "-"}
+                      <td className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                        <div className="text-xs truncate max-w-[120px]">
+                          {o.userEmail || o.customer?.email || "-"}
+                        </div>
                       </td>
-                      <td className="py-2 pr-4">{o.items?.length ?? 0}</td>
-                      <td className="py-2 pr-4">
+                      <td className="py-2 pr-2 sm:pr-4">
+                        <div className="text-center">
+                          {o.items?.length ?? 0}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4">
                         <span
                           className={`px-2 py-1 rounded-full text-xs border ${
                             o.status === "forward"
@@ -411,37 +434,51 @@ export default function AdminOrdersPage() {
                           {o.status || "pending"}
                         </span>
                       </td>
-                      <td className="py-2 pr-4">
-                        ${o.total?.toFixed?.(2) || "-"}
+                      <td className="py-2 pr-2 sm:pr-4">
+                        <div className="text-sm font-medium">
+                          ${o.total?.toFixed?.(2) || "-"}
+                        </div>
+                        <div className="text-xs text-gray-500 lg:hidden">
+                          {new Date(o.createdAt).toLocaleDateString()}
+                        </div>
                       </td>
-                      <td className="py-2 pr-4">
-                        {new Date(o.createdAt).toLocaleString()}
+                      <td className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                        <div className="text-xs">
+                          {new Date(o.createdAt).toLocaleString()}
+                        </div>
                       </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Right: Details panel */}
-          <div className="flex-[1] md:sticky md:top-20 self-start max-h-[70vh] md:max-h-[calc(100vh-200px)] overflow-auto">
+          <div className="flex-[1] lg:sticky lg:top-20 self-start max-h-[50vh] sm:max-h-[60vh] lg:max-h-[calc(100vh-200px)] overflow-auto">
             {selectedId ? (
               (() => {
-                const o = data.orders.find((x: any) => x._id === selectedId);
+                const o = filteredOrders.find((x: any) => x._id === selectedId);
                 if (!o) return null;
                 const customer = o.customer || {};
                 return (
-                  <div className="grid gap-6">
-                    <div className="rounded-xl border p-4 bg-white">
-                      <h2 className="font-semibold mb-3">Customer</h2>
-                      <div className="text-sm space-y-1">
+                  <div className="flex flex-row sm:flex-col gap-4 sm:gap-6">
+                    <div className="rounded-xl border p-3 sm:p-4 bg-[#FAFAFA]">
+                      <h2 className="font-semibold mb-3 text-sm sm:text-base">
+                        Customer
+                      </h2>
+                      <div className="text-xs sm:text-sm space-y-1">
                         <div>
                           <span className="text-neutral-500">Name:</span>{" "}
-                          {customer.fullName || "-"}
+                          <span className="font-medium">
+                            {customer.fullName || "-"}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-500">Email:</span>{" "}
-                          {customer.email || o.userEmail || "-"}
+                          <span className="break-all">
+                            {customer.email || o.userEmail || "-"}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-500">Phone:</span>{" "}
@@ -485,13 +522,17 @@ export default function AdminOrdersPage() {
                         )}
                       </div>
                     </div>
-                    <div className="rounded-xl border p-4 bg-white">
-                      <h2 className="font-semibold mb-3">Items</h2>
-                      <div className="rounded-xl border p-4 bg-white">
-                        <h2 className="font-semibold mb-3">Status & Actions</h2>
-                        <div className="flex items-center gap-2 flex-wrap">
+                    <div className="rounded-xl border p-3 sm:p-4 bg-[#FAFAFA]">
+                      <h2 className="font-semibold mb-3 text-sm sm:text-base">
+                        Items
+                      </h2>
+                      <div className="rounded-xl border p-3 sm:p-4 bg-white mb-4">
+                        <h2 className="font-semibold mb-3 text-sm">
+                          Status & Actions
+                        </h2>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <select
-                            className="rounded-lg border px-3 py-2 text-sm cursor-pointer"
+                            className="rounded-lg border px-3 py-2 text-sm cursor-pointer flex-1"
                             value={o.status || "pending"}
                             onChange={async (e) => {
                               const status = e.target.value;
@@ -526,29 +567,29 @@ export default function AdminOrdersPage() {
                         {o.items?.map((it: any) => (
                           <div
                             key={it.id}
-                            className="py-3 flex items-center gap-3"
+                            className="py-3 flex items-start sm:items-center gap-3"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={it.image}
                               alt={it.name}
-                              className="h-12 w-12 rounded-lg object-cover border"
+                              className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover border flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium truncate">
+                              <div className="text-xs sm:text-sm font-medium truncate">
                                 {it.name}
                               </div>
-                              <div className="text-xs text-neutral-600">
-                                Qty: {it.quantity}
+                              <div className="text-xs text-neutral-600 mt-1">
+                                ${it.price.toFixed(2)} × {it.quantity}
                               </div>
                             </div>
-                            <div className="text-sm font-medium w-20 text-right">
+                            <div className="text-xs sm:text-sm font-medium text-right flex-shrink-0">
                               ${(it.price * it.quantity).toFixed(2)}
                             </div>
                           </div>
                         ))}
                       </div>
-                      <div className="mt-3 text-sm">
+                      <div className="mt-3 text-xs sm:text-sm">
                         <div className="flex justify-between">
                           <span>Subtotal</span>
                           <span>
@@ -561,7 +602,7 @@ export default function AdminOrdersPage() {
                             ${o.totals?.shipping?.toFixed?.(2) || "-"}
                           </span>
                         </div>
-                        <div className="flex justify-between font-semibold text-base">
+                        <div className="flex justify-between font-semibold text-sm sm:text-base border-t pt-2 mt-2">
                           <span>Total</span>
                           <span>
                             $
@@ -576,7 +617,7 @@ export default function AdminOrdersPage() {
                 );
               })()
             ) : (
-              <div className="rounded-xl border p-6 bg-white text-sm text-neutral-600">
+              <div className="rounded-xl border p-6 bg-[#FAFAFA] text-sm text-neutral-600">
                 Select an order to view details.
               </div>
             )}

@@ -43,34 +43,44 @@ export default function OrderPage() {
   }
 
   return (
-    <Container className="py-12 space-y-8">
-      <h1 className="text-4xl font-extrabold tracking-tight">Checkout</h1>
+    <Container className="py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+        Checkout
+      </h1>
 
       {null}
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Summary */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border bg-white p-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="rounded-xl border bg-[#FAFAFA] p-4 sm:p-6">
             <h2 className="font-semibold text-lg">Order Summary</h2>
             <div className="mt-4 divide-y">
               {items.length === 0 && (
-                <p className="text-sm text-neutral-600">Your cart is empty.</p>
+                <p className="text-sm text-neutral-600 py-4">
+                  Your cart is empty.
+                </p>
               )}
               {items.map((item) => (
-                <div key={item.id} className="py-3 flex items-center gap-3">
+                <div
+                  key={item.id}
+                  className="py-3 sm:py-4 flex items-start sm:items-center gap-3"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="h-14 w-14 rounded-lg object-cover border"
+                    className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-cover border flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
-                    <div className="mt-1 flex items-center gap-2">
+                    <p className="text-xs text-gray-500 mt-1">
+                      ${item.price.toFixed(2)} each
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
                       <button
                         type="button"
-                        className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-neutral-50 cursor-pointer"
+                        className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border flex items-center justify-center hover:bg-neutral-50 cursor-pointer text-sm"
                         onClick={() =>
                           dispatch({
                             type: "DECREMENT",
@@ -85,7 +95,7 @@ export default function OrderPage() {
                       </span>
                       <button
                         type="button"
-                        className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-neutral-50 cursor-pointer"
+                        className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border flex items-center justify-center hover:bg-neutral-50 cursor-pointer text-sm"
                         onClick={() =>
                           dispatch({
                             type: "ADD",
@@ -102,8 +112,9 @@ export default function OrderPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="text-sm font-medium w-16 text-right">
-                    ${(item.price * item.quantity).toFixed(2)}
+                  <div className="text-sm font-medium text-right flex-shrink-0">
+                    <div className="sm:hidden text-xs text-gray-500">Total</div>
+                    <div>${(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                 </div>
               ))}
@@ -126,17 +137,17 @@ export default function OrderPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="rounded-xl border bg-white p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div className="rounded-xl border bg-[#FAFAFA] p-4 sm:p-6 space-y-4">
             <h2 className="font-semibold text-lg">Customer Details</h2>
-            <div className="grid gap-3">
+            <div className="grid gap-3 sm:gap-4">
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">Full name</span>
                 <input
                   name="fullName"
                   required
                   placeholder="John Doe"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
               <label className="text-sm">
@@ -148,7 +159,7 @@ export default function OrderPage() {
                   type="email"
                   required
                   placeholder="john@example.com"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
               <label className="text-sm">
@@ -159,13 +170,13 @@ export default function OrderPage() {
                   name="phone"
                   required
                   placeholder="+1 555 000 1111"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
             </div>
           </div>
 
-          <div className="rounded-xl border bg-white p-6 space-y-4">
+          <div className="rounded-xl border bg-[#FAFAFA] p-4 sm:p-6 space-y-4">
             <h2 className="font-semibold text-lg">Shipping Address</h2>
             <label className="text-sm">
               <span className="mb-1 block text-neutral-700">
@@ -175,7 +186,7 @@ export default function OrderPage() {
                 name="addressLine1"
                 required
                 placeholder="123 Main St"
-                className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
               />
             </label>
             <label className="text-sm">
@@ -185,17 +196,17 @@ export default function OrderPage() {
               <input
                 name="addressLine2"
                 placeholder="Apartment, suite, etc. (optional)"
-                className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
               />
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">City</span>
                 <input
                   name="city"
                   required
                   placeholder="City"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
               <label className="text-sm">
@@ -206,18 +217,18 @@ export default function OrderPage() {
                   name="state"
                   required
                   placeholder="State or province"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">Postal code</span>
                 <input
                   name="postalCode"
                   required
                   placeholder="ZIP / Postal code"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
               <label className="text-sm">
@@ -226,32 +237,39 @@ export default function OrderPage() {
                   name="country"
                   required
                   placeholder="Country"
-                  className="h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10"
+                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
                 />
               </label>
             </div>
           </div>
 
-          <div className="rounded-xl border bg-white p-6 space-y-4">
+          <div className="rounded-xl border bg-[#FAFAFA] p-4 sm:p-6 space-y-4">
             <h2 className="font-semibold text-lg">Additional Notes</h2>
             <textarea
               name="notes"
               placeholder="Any delivery notes or special instructions"
               rows={4}
-              className="rounded-xl border px-4 py-3"
+              className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black/10 text-base resize-none"
             />
           </div>
 
           <button
-            className={`h-12 w-full rounded-full text-white transition-colors ${
+            className={`h-12 sm:h-14 w-full rounded-full text-white transition-all duration-200 font-medium ${
               submitting
                 ? "bg-black/70 cursor-not-allowed"
-                : "bg-black hover:bg-gray-900 cursor-pointer"
+                : "bg-black hover:bg-gray-900 cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
             }`}
             type="submit"
             disabled={submitting}
           >
-            {submitting ? "Placing order..." : "Place Order"}
+            {submitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Placing order...
+              </div>
+            ) : (
+              "Place Order"
+            )}
           </button>
         </form>
       </div>

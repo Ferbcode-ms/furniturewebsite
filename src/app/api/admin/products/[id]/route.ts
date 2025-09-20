@@ -4,9 +4,10 @@ import { toObjectId } from "@/lib/dbUtils";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const _id = toObjectId(params.id);
+  const { id } = await params;
+  const _id = toObjectId(id);
   if (!_id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const db = await getDb();
   const doc = await db.collection("products").findOne({ _id });
@@ -16,9 +17,10 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const _id = toObjectId(params.id);
+  const { id } = await params;
+  const _id = toObjectId(id);
   if (!_id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const body = await req.json();
   const db = await getDb();
@@ -28,9 +30,10 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const _id = toObjectId(params.id);
+  const { id } = await params;
+  const _id = toObjectId(id);
   if (!_id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const db = await getDb();
   await db.collection("products").deleteOne({ _id });

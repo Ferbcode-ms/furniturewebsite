@@ -11,6 +11,7 @@ export default function AdminCategoriesPage() {
   const { data, mutate } = useSWR("/api/admin/categories", fetcher);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [parentId, setParentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -25,7 +26,7 @@ export default function AdminCategoriesPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({ name, description, parentId }),
       });
       const d = await res.json();
       if (!res.ok) {
@@ -36,6 +37,7 @@ export default function AdminCategoriesPage() {
       }
       setName("");
       setDescription("");
+      setParentId(null);
       const wasEdit = Boolean(editingId);
       setEditingId(null);
       toast.success(wasEdit ? "Category updated" : "Category created");
@@ -64,6 +66,7 @@ export default function AdminCategoriesPage() {
     setEditingId(c._id);
     setName(c.name || "");
     setDescription(c.description || "");
+    setParentId(c.parentId || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -71,6 +74,7 @@ export default function AdminCategoriesPage() {
     setEditingId(null);
     setName("");
     setDescription("");
+    setParentId(null);
   }
 
   return (
@@ -87,7 +91,7 @@ export default function AdminCategoriesPage() {
       )}
       <form
         onSubmit={createCategory}
-        className="mt-6 grid sm:grid-cols-3 gap-3 max-w-2xl"
+        className="mt-6 grid sm:grid-cols-4 gap-3 max-w-3xl"
       >
         <input
           value={name}
@@ -102,19 +106,35 @@ export default function AdminCategoriesPage() {
           placeholder="Description"
           className="rounded-lg border px-3 py-2"
         />
-        <button className="rounded-full bg-black text-white px-5 py-2 text-sm hover:bg-gray-900 transition-colors cursor-pointer">
-          {editingId ? "Save Changes" : "Add"}
-        </button>
-        {editingId && (
-          <button
-            type="button"
-            onClick={cancelEdit}
-            className="rounded-full border border-neutral-300 px-5 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
-          >
-            Cancel
+        <select
+          value={parentId || ""}
+          onChange={(e) => setParentId(e.target.value || null)}
+          className="rounded-lg border px-3 py-2"
+        >
+          <option value="">📁 Main Category</option>
+          {data?.categories
+            ?.filter((c: any) => !c.parentId)
+            .map((c: any) => (
+              <option key={c._id} value={c._id}>
+                📁 {c.name}
+              </option>
+            ))}
+        </select>
+        <div className="flex gap-2">
+          <button className="rounded-full bg-black text-white px-5 py-2 text-sm hover:bg-gray-900 transition-colors cursor-pointer">
+            {editingId ? "Save Changes" : "Add"}
           </button>
-        )}
-        {error && <p className="sm:col-span-3 text-sm text-red-600">{error}</p>}
+          {editingId && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="rounded-full border border-neutral-300 px-5 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+        {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
       </form>
 
       <div className="mt-6 overflow-x-auto">
@@ -123,32 +143,67 @@ export default function AdminCategoriesPage() {
             <tr className="text-left border-b">
               <th className="py-2 pr-4">Name</th>
               <th className="py-2 pr-4">Description</th>
+              <th className="py-2 pr-4">Type</th>
+              <th className="py-2 pr-4">Parent</th>
               <th className="py-2 pr-4">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {data?.categories?.map((c: any) => (
-              <tr key={c._id} className="border-b last:border-0">
-                <td className="py-2 pr-4">{c.name}</td>
-                <td className="py-2 pr-4">{c.description}</td>
-                <td className="py-2 pr-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => edit(c)}
-                      className="rounded-full border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 transition-colors cursor-pointer"
+            {data?.categories?.map((c: any) => {
+              const parentCategory = data?.categories?.find(
+                (p: any) => p._id === c.parentId
+              );
+              return (
+                <tr key={c._id} className="border-b last:border-0">
+                  <td className="py-2 pr-4">
+                    <div className="flex items-center gap-2">
+                      {c.parentId && <span className="text-gray-400">└─</span>}
+                      <span className={c.parentId ? "text-sm" : "font-medium"}>
+                        {c.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2 pr-4">{c.description}</td>
+                  <td className="py-2 pr-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        c.parentId
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
                     >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => remove(c._id)}
-                      className="rounded-full border border-red-300 text-red-700 px-3 py-1 text-xs hover:bg-red-50 transition-colors cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {c.parentId ? "Sub-category" : "Main Category"}
+                    </span>
+                  </td>
+                  <td className="py-2 pr-4">
+                    {parentCategory ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600">📁</span>
+                        <span>{parentCategory.name}</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="py-2 pr-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => edit(c)}
+                        className="rounded-full border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 transition-colors cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => remove(c._id)}
+                        className="rounded-full border border-red-300 text-red-700 px-3 py-1 text-xs hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -32,6 +32,7 @@ export default function AdminProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newCat, setNewCat] = useState("");
+  const [selectedMainCategory, setSelectedMainCategory] = useState<string>("");
 
   async function createProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -110,6 +111,26 @@ export default function AdminProductsPage() {
       careInstructions: p.careInstructions || "",
       specifications: p.specifications || "",
     });
+
+    // Set the main category for editing
+    if (p.category) {
+      const categoryData = cats?.categories?.find(
+        (c: any) => c.name === p.category
+      );
+      if (categoryData?.parentId) {
+        // If it's a subcategory, find and set the parent category
+        const parentCategory = cats?.categories?.find(
+          (c: any) => c._id === categoryData.parentId
+        );
+        setSelectedMainCategory(parentCategory?.name || "");
+      } else {
+        // If it's a main category, set it as selected main category
+        setSelectedMainCategory(p.category);
+      }
+    } else {
+      setSelectedMainCategory("");
+    }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -130,6 +151,7 @@ export default function AdminProductsPage() {
       careInstructions: "",
       specifications: "",
     });
+    setSelectedMainCategory("");
   }
 
   async function addCategoryInline(e: React.FormEvent) {
@@ -145,6 +167,30 @@ export default function AdminProductsPage() {
       mutateCats();
     }
   }
+
+  // Get main categories (categories without parentId)
+  const mainCategories =
+    cats?.categories?.filter((c: any) => !c.parentId) || [];
+
+  // Get sub-categories for selected main category
+  const subCategories =
+    cats?.categories?.filter(
+      (c: any) =>
+        c.parentId &&
+        mainCategories.find((main: any) => main.name === selectedMainCategory)
+          ?._id === c.parentId
+    ) || [];
+
+  // Handle main category selection
+  const handleMainCategoryChange = (mainCategoryName: string) => {
+    setSelectedMainCategory(mainCategoryName);
+    setForm((f) => ({ ...f, category: mainCategoryName })); // Set main category as selected category
+  };
+
+  // Handle sub-category selection
+  const handleSubCategoryChange = (subCategoryName: string) => {
+    setForm((f) => ({ ...f, category: subCategoryName }));
+  };
 
   return (
     <Container className="pt-10">
@@ -162,7 +208,7 @@ export default function AdminProductsPage() {
         onSubmit={createProduct}
         className="mt-6 grid lg:grid-cols-3 gap-4 items-start"
       >
-        <div className="space-y-3 lg:col-span-2 rounded-xl border p-4 bg-white">
+        <div className="space-y-3 lg:col-span-2 rounded-xl border p-4 bg-[#FAFAFA]">
           <div className="grid sm:grid-cols-2 gap-3">
             <input
               value={form.name}
@@ -192,20 +238,34 @@ export default function AdminProductsPage() {
               className="rounded-lg border px-3 py-2 sm:col-span-2"
             />
             <div className="grid sm:grid-cols-2 gap-3 sm:col-span-2">
-              <select
-                value={form.category}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, category: e.target.value }))
-                }
-                className="rounded-lg border px-3 py-2"
-              >
-                <option value="">No category</option>
-                {cats?.categories?.map((c: any) => (
-                  <option key={c._id} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+              <div className="space-y-2">
+                <select
+                  value={selectedMainCategory}
+                  onChange={(e) => handleMainCategoryChange(e.target.value)}
+                  className="rounded-lg border px-3 py-2 w-full"
+                >
+                  <option value="">Select Main Category</option>
+                  {mainCategories.map((c: any) => (
+                    <option key={c._id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                {selectedMainCategory && (
+                  <select
+                    value={form.category}
+                    onChange={(e) => handleSubCategoryChange(e.target.value)}
+                    className="rounded-lg border px-3 py-2 w-full"
+                  >
+                    <option value="">Select Sub-Category</option>
+                    {subCategories.map((c: any) => (
+                      <option key={c._id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
               <div className="flex gap-2">
                 <input
                   value={newCat}
@@ -344,7 +404,7 @@ export default function AdminProductsPage() {
             )}
           </div>
         </div>
-        <div className="rounded-xl border p-4 bg-white">
+        <div className="rounded-xl border p-4 bg-[#FAFAFA]">
           <h3 className="font-semibold mb-2">Preview</h3>
           <div className="text-xs text-neutral-600 mb-2">
             How it might look in listings

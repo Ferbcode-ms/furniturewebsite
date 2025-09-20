@@ -22,7 +22,7 @@ export default function AdminHome() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/admin/orders"
-          className="group rounded-2xl border bg-white p-5 hover:shadow-md transition"
+          className="group rounded-2xl border bg-[#FAFAFA] p-5 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -40,7 +40,7 @@ export default function AdminHome() {
 
         <Link
           href="/admin/categories"
-          className="group rounded-2xl border bg-white p-5 hover:shadow-md transition"
+          className="group rounded-2xl border bg-[#FAFAFA] p-5 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -58,7 +58,7 @@ export default function AdminHome() {
 
         <Link
           href="/admin/products"
-          className="group rounded-2xl border bg-white p-5 hover:shadow-md transition"
+          className="group rounded-2xl border bg-[#FAFAFA] p-5 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <div>

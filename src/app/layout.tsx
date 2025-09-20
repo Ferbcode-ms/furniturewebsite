@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Anton } from "next/font/google";
+import { Mulish, Anton } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartContext";
 import Navbar from "@/components/layout/Navbar";
@@ -8,9 +8,10 @@ import ConditionalFooter from "@/components/layout/ConditionalFooter";
 // Welcome screen removed
 import ToastProvider from "@/components/ToastProvider";
 
-const roboto = Roboto({
+const mulish = Mulish({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-mulish",
 });
 
 const displayFont = Anton({
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`${roboto.className} ${displayFont.variable} antialiased bg-white text-neutral-900`}
+        className={`${mulish.className} ${displayFont.variable} antialiased bg-[#FAFAFA] text-neutral-900`}
       >
         <CartProvider>
           <Navbar />

@@ -10,19 +10,19 @@ export default function AboutPage() {
         interiors for homes and offices.
       </p>
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="rounded-xl border bg-white p-6">
+        <div className="rounded-xl border bg-[#FAFAFA] p-6">
           <h3 className="font-semibold">Our Mission</h3>
           <p className="mt-2 text-sm text-neutral-600">
             Bring quality design to everyday spaces.
           </p>
         </div>
-        <div className="rounded-xl border bg-white p-6">
+        <div className="rounded-xl border bg-[#FAFAFA] p-6">
           <h3 className="font-semibold">Our Values</h3>
           <p className="mt-2 text-sm text-neutral-600">
             Craftsmanship, simplicity, longevity.
           </p>
         </div>
-        <div className="rounded-xl border bg-white p-6">
+        <div className="rounded-xl border bg-[#FAFAFA] p-6">
           <h3 className="font-semibold">Location</h3>
           <p className="mt-2 text-sm text-neutral-600">
             Serving clients worldwide.
