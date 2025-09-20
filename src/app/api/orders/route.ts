@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       { ok: true, orderId: result.insertedId },
       { status: 201 }
     );
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

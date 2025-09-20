@@ -2,8 +2,9 @@
 import useSWR from "swr";
 import Container from "@/components/ui/Container";
 import Skeleton from "@/components/ui/Skeleton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { Order, OrderItem } from "@/types";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -16,21 +17,27 @@ export default function AdminOrdersPage() {
   const [dateFilter, setDateFilter] = useState<"all" | "today">("all");
 
   // Filter orders based on current filter
-  const filteredOrders =
-    data?.orders?.filter((o: any) => {
-      if (dateFilter === "all") return true;
-      const created = new Date(o.createdAt);
-      const now = new Date();
-      return (
-        created.getFullYear() === now.getFullYear() &&
-        created.getMonth() === now.getMonth() &&
-        created.getDate() === now.getDate()
-      );
-    }) || [];
+  const filteredOrders = useMemo(() => {
+    return (
+      data?.orders?.filter((o: Order) => {
+        if (dateFilter === "all") return true;
+        const created = new Date(o.createdAt);
+        const now = new Date();
+        return (
+          created.getFullYear() === now.getFullYear() &&
+          created.getMonth() === now.getMonth() &&
+          created.getDate() === now.getDate()
+        );
+      }) || []
+    );
+  }, [data?.orders, dateFilter]);
 
   // Clear selected order if it's not in the filtered results
   useEffect(() => {
-    if (selectedId && !filteredOrders.some((o: any) => o._id === selectedId)) {
+    if (
+      selectedId &&
+      !filteredOrders.some((o: Order) => o._id === selectedId)
+    ) {
       setSelectedId(null);
     }
   }, [selectedId, filteredOrders]);
@@ -42,7 +49,7 @@ export default function AdminOrdersPage() {
     setSelectedId(null);
   };
 
-  function toCsvValue(value: any) {
+  function toCsvValue(value: unknown) {
     if (value === null || value === undefined) return "";
     const str = String(value);
     if (/[",\n]/.test(str)) {
@@ -51,62 +58,7 @@ export default function AdminOrdersPage() {
     return str;
   }
 
-  function buildOrdersCsv(orders: any[]) {
-    const header = [
-      "Order ID",
-      "Status",
-      "Customer Name",
-      "Email",
-      "Phone",
-      "Items",
-      "Subtotal",
-      "Shipping",
-      "Total",
-      "Created",
-      "Address",
-    ];
-    const rows = orders.map((o) => {
-      const c = o.customer || {};
-      const address = [
-        [c.addressLine1, c.addressLine2].filter(Boolean).join(" "),
-        [c.city, c.state, c.postalCode, c.country].filter(Boolean).join(", "),
-      ]
-        .filter(Boolean)
-        .join(" | ");
-      return [
-        o._id,
-        o.status || "pending",
-        c.fullName || "",
-        c.email || o.userEmail || "",
-        c.phone || "",
-        Array.isArray(o.items) ? o.items.length : 0,
-        o.totals?.subtotal ?? "",
-        o.totals?.shipping ?? "",
-        o.totals?.grandTotal ?? o.total ?? "",
-        new Date(o.createdAt).toLocaleString(),
-        address,
-      ];
-    });
-    const csv = [header, ...rows]
-      .map((r: any[]) => r.map((v: any) => toCsvValue(v)).join(","))
-      .join("\n");
-    return csv;
-  }
-
-  function downloadCsvFor(orders: any[], filename: string) {
-    const csv = buildOrdersCsv(orders);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function buildLineItemsCsv(orders: any[]) {
+  function buildLineItemsCsv(orders: Order[]) {
     const header = [
       "Order ID",
       "Status",
@@ -119,7 +71,7 @@ export default function AdminOrdersPage() {
       "Quantity",
       "Line Total",
     ];
-    const rows: any[] = [];
+    const rows: unknown[][] = [];
     for (const o of orders) {
       const c = o.customer || {};
       for (const it of o.items || []) {
@@ -152,12 +104,12 @@ export default function AdminOrdersPage() {
       }
     }
     const csv = [header, ...rows]
-      .map((r: any[]) => r.map((v: any) => toCsvValue(v)).join(","))
+      .map((r: unknown[]) => r.map((v: unknown) => toCsvValue(v)).join(","))
       .join("\n");
     return csv;
   }
 
-  function downloadItemsCsvFor(orders: any[], filename: string) {
+  function downloadItemsCsvFor(orders: Order[], filename: string) {
     const csv = buildLineItemsCsv(orders);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -170,12 +122,12 @@ export default function AdminOrdersPage() {
     URL.revokeObjectURL(url);
   }
 
-  function printInvoice(o: any) {
+  function printInvoice(o: Order) {
     if (!o) return;
     const customer = o.customer || {};
     const itemsRows = (o.items || [])
       .map(
-        (it: any, idx: number) => `
+        (it: OrderItem, idx: number) => `
           <tr>
             <td style="padding:8px;border-bottom:1px solid #eee">${idx + 1}</td>
             <td style="padding:8px;border-bottom:1px solid #eee">${it.name}</td>
@@ -195,7 +147,8 @@ export default function AdminOrdersPage() {
     const subtotal =
       o.totals?.subtotal ??
       (o.items || []).reduce(
-        (s: number, it: any) => s + Number(it.price) * Number(it.quantity),
+        (s: number, it: OrderItem) =>
+          s + Number(it.price) * Number(it.quantity),
         0
       );
     const shipping = o.totals?.shipping ?? 0;
@@ -348,8 +301,7 @@ export default function AdminOrdersPage() {
               <button
                 className="px-3 py-1.5 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
-                  const now = new Date();
-                  const todayPending = filteredOrders.filter((o: any) => {
+                  const todayPending = filteredOrders.filter((o: Order) => {
                     return (o.status || "pending") === "pending";
                   });
                   downloadItemsCsvFor(
@@ -392,7 +344,7 @@ export default function AdminOrdersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredOrders.map((o: any) => (
+                  {filteredOrders.map((o: Order) => (
                     <tr
                       key={o._id}
                       className={`border-b last:border-0 cursor-pointer hover:bg-gray-50 ${
@@ -458,7 +410,9 @@ export default function AdminOrdersPage() {
           <div className="flex-[1] lg:sticky lg:top-20 self-start max-h-[50vh] sm:max-h-[60vh] lg:max-h-[calc(100vh-200px)] overflow-auto">
             {selectedId ? (
               (() => {
-                const o = filteredOrders.find((x: any) => x._id === selectedId);
+                const o = filteredOrders.find(
+                  (x: Order) => x._id === selectedId
+                );
                 if (!o) return null;
                 const customer = o.customer || {};
                 return (
@@ -547,8 +501,12 @@ export default function AdminOrdersPage() {
                                 if (!res.ok) throw new Error("Update failed");
                                 toast.success("Order status updated");
                                 await mutate();
-                              } catch (err: any) {
-                                toast.error(err?.message || "Update failed");
+                              } catch (err: unknown) {
+                                const msg =
+                                  err instanceof Error
+                                    ? err.message
+                                    : "Update failed";
+                                toast.error(msg);
                               }
                             }}
                           >
@@ -564,7 +522,7 @@ export default function AdminOrdersPage() {
                         </div>
                       </div>
                       <div className="divide-y">
-                        {o.items?.map((it: any) => (
+                        {o.items?.map((it: OrderItem) => (
                           <div
                             key={it.id}
                             className="py-3 flex items-start sm:items-center gap-3"

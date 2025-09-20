@@ -27,9 +27,10 @@ export default function AdminLoginPage() {
       if (!res.ok) throw new Error(data.error || "Login failed");
       toast.success("Welcome back");
       router.push("/admin");
-    } catch (err: any) {
-      setError(err.message);
-      toast.error(err.message || "Login failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

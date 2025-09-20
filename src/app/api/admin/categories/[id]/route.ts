@@ -33,9 +33,16 @@ export async function PUT(
 
   // If parentId is provided, verify parent exists
   if (parentId) {
+    const parentObjectId = toObjectId(parentId);
+    if (!parentObjectId) {
+      return NextResponse.json(
+        { error: "Invalid parent category ID" },
+        { status: 400 }
+      );
+    }
     const parent = await db
       .collection("categories")
-      .findOne({ _id: toObjectId(parentId) });
+      .findOne({ _id: parentObjectId });
     if (!parent) {
       return NextResponse.json(
         { error: "Parent category not found" },

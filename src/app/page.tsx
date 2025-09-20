@@ -9,20 +9,12 @@ import { ArrowRight } from "lucide-react";
 import ScrollVelocity from "@/components/ScrollVelocity";
 import CircularText from "@/components/CircularText";
 import CurvedLoop from "@/components/CurvedLoop";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import SimpleLoader from "@/components/SimpleLoader";
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-none">
-      {children}
-    </h2>
-  );
-}
+import { Product } from "@/types";
 
 export default function Home() {
-  const [trending, setTrending] = useState<any[]>([]);
-  const [arrivals, setArrivals] = useState<any[]>([]);
+  const [trending, setTrending] = useState<Product[]>([]);
+  const [arrivals, setArrivals] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -31,13 +23,19 @@ export default function Home() {
         const [tr, ar, cs] = await Promise.all([
           fetch("/api/products?tag=trending")
             .then((r) => r.json())
-            .catch(() => ({ products: [] })),
+            .catch(() => ({ products: [] })) as Promise<{
+            products: Product[];
+          }>,
           fetch("/api/products?tag=arrival")
             .then((r) => r.json())
-            .catch(() => ({ products: [] })),
+            .catch(() => ({ products: [] })) as Promise<{
+            products: Product[];
+          }>,
           fetch("/api/categories")
             .then((r) => r.json())
-            .catch(() => ({ categories: [] })),
+            .catch(() => ({ categories: [] })) as Promise<{
+            categories: string[];
+          }>,
         ]);
         setTrending(tr.products || []);
         setArrivals(ar.products || []);
@@ -235,7 +233,7 @@ export default function Home() {
             </>
           )}
           {!loading &&
-            arrivals.map((p: any, i: number) => {
+            arrivals.map((p: Product, i: number) => {
               const variants: Array<"square" | "tall" | "wide"> = [
                 "square",
                 "tall",

@@ -8,23 +8,9 @@ import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 import { ShoppingCart } from "lucide-react";
 import SimpleLoader from "@/components/SimpleLoader";
-type DetailProduct = {
-  _id?: string;
-  id?: string;
-  name: string;
-  price: number;
-  image: string;
-  category?: string;
-  description?: string;
-  tags?: string[];
-  dimensions?: string;
-  materials?: string;
-  features?: string;
-  weight?: string;
-  warranty?: string;
-  careInstructions?: string;
-  specifications?: string;
-};
+import { Product } from "@/types";
+
+type DetailProduct = Product;
 
 async function getProductById(id: string): Promise<DetailProduct | undefined> {
   try {
@@ -70,12 +56,12 @@ export default function ProductDetail({
           setRelated([]);
           return;
         }
-        const category = (product as any).category as string | undefined;
+        const category = product?.category;
         const qs = category ? `?category=${encodeURIComponent(category)}` : "";
         const res = await fetch(`/api/products${qs}`);
         const data = await res.json();
         const items: DetailProduct[] = (data.products || []).filter(
-          (p: any) => p._id !== id && p.id !== id
+          (p: Product) => p._id !== id && p.id !== id
         );
         setRelated(items.slice(0, 4));
       } catch {
@@ -112,8 +98,7 @@ export default function ProductDetail({
             "@type": "Product",
             name: product.name,
             description:
-              (product as any).description ||
-              `Premium ${product.name} furniture`,
+              product?.description || `Premium ${product.name} furniture`,
             image: product.image,
             offers: {
               "@type": "Offer",
@@ -146,25 +131,25 @@ export default function ProductDetail({
               "@type": "Brand",
               name: "Furniture Store",
             },
-            category: (product as any).category || "Furniture",
-            material: (product as any).materials,
-            weight: (product as any).weight,
+            category: product?.category || "Furniture",
+            material: product?.materials,
+            weight: product?.weight,
             additionalProperty: [
-              ...((product as any).dimensions
+              ...(product?.dimensions
                 ? [
                     {
                       "@type": "PropertyValue",
                       name: "Dimensions",
-                      value: (product as any).dimensions,
+                      value: product.dimensions,
                     },
                   ]
                 : []),
-              ...((product as any).warranty
+              ...(product?.warranty
                 ? [
                     {
                       "@type": "PropertyValue",
                       name: "Warranty",
-                      value: (product as any).warranty,
+                      value: product.warranty,
                     },
                   ]
                 : []),
@@ -201,21 +186,21 @@ export default function ProductDetail({
             <p className="mt-2 inline-flex items-center rounded-full bg-black text-white px-4 py-2 text-sm font-semibold">
               ${price}
             </p>
-            {"category" in (product as any) && (
+            {product?.category && (
               <p className="mt-1 text-xs text-neutral-600">
-                {(product as any).category}
+                {product.category}
               </p>
             )}
 
             <div className="mt-5 h-px bg-neutral-200" />
 
-            {((product as any).description ||
-              (product as any).materials ||
-              (product as any).dimensions) && (
+            {(product?.description ||
+              product?.materials ||
+              product?.dimensions) && (
               <div className="mt-6 space-y-6">
-                {(product as any).description && (
+                {product?.description && (
                   <p className="text-sm text-neutral-700 max-w-prose whitespace-pre-line">
-                    {(product as any).description}
+                    {product.description}
                   </p>
                 )}
 
@@ -224,56 +209,56 @@ export default function ProductDetail({
                     Product details
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                    {(product as any).dimensions && (
+                    {product?.dimensions && (
                       <div className="flex items-start gap-2">
                         <span className="text-neutral-500 min-w-24">
                           Dimensions
                         </span>
                         <span className="text-neutral-800">
-                          {(product as any).dimensions}
+                          {product.dimensions}
                         </span>
                       </div>
                     )}
-                    {(product as any).materials && (
+                    {product?.materials && (
                       <div className="flex items-start gap-2">
                         <span className="text-neutral-500 min-w-24">
                           Materials
                         </span>
                         <span className="text-neutral-800">
-                          {(product as any).materials}
+                          {product.materials}
                         </span>
                       </div>
                     )}
-                    {(product as any).weight && (
+                    {product?.weight && (
                       <div className="flex items-start gap-2">
                         <span className="text-neutral-500 min-w-24">
                           Weight
                         </span>
                         <span className="text-neutral-800">
-                          {(product as any).weight}
+                          {product.weight}
                         </span>
                       </div>
                     )}
-                    {(product as any).warranty && (
+                    {product?.warranty && (
                       <div className="flex items-start gap-2">
                         <span className="text-neutral-500 min-w-24">
                           Warranty
                         </span>
                         <span className="text-neutral-800">
-                          {(product as any).warranty}
+                          {product.warranty}
                         </span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {(product as any).features && (
+                {product?.features && (
                   <div className="space-y-2">
                     <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
                       Key features
                     </h3>
                     <ul className="list-disc pl-5 text-sm text-neutral-800 space-y-1">
-                      {String((product as any).features)
+                      {String(product.features)
                         .split(/\r?\n/)
                         .map((line: string, idx: number) => (
                           <li key={idx}>{line}</li>
@@ -282,24 +267,24 @@ export default function ProductDetail({
                   </div>
                 )}
 
-                {(product as any).careInstructions && (
+                {product?.careInstructions && (
                   <div className="space-y-1">
                     <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
                       Care instructions
                     </h3>
                     <p className="text-sm text-neutral-700 whitespace-pre-line">
-                      {(product as any).careInstructions}
+                      {product.careInstructions}
                     </p>
                   </div>
                 )}
 
-                {(product as any).specifications && (
+                {product?.specifications && (
                   <div className="space-y-1">
                     <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
                       Specifications
                     </h3>
                     <p className="text-sm text-neutral-700 whitespace-pre-line">
-                      {(product as any).specifications}
+                      {product.specifications}
                     </p>
                   </div>
                 )}
@@ -337,7 +322,7 @@ export default function ProductDetail({
             Products from the same category
           </p>
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {related.map((rp: any) => (
+            {related.map((rp: Product) => (
               <ProductCard
                 key={rp._id || rp.id}
                 id={String(rp._id || rp.id)}

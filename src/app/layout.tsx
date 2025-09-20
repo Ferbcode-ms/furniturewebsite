@@ -3,7 +3,6 @@ import { Mulish, Anton } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartContext";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 // Welcome screen removed
 import ToastProvider from "@/components/ToastProvider";

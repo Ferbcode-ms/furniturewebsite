@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { Product } from "@/types";
 import { productsQuerySchema } from "@/lib/validations";
 
 export async function GET(req: NextRequest) {
@@ -15,14 +16,14 @@ export async function GET(req: NextRequest) {
 
     const validatedParams = productsQuerySchema.parse(queryParams);
 
-    const query: any = {};
+    const query: Record<string, string> = {};
     if (validatedParams.category && validatedParams.category !== "All") {
       query.category = validatedParams.category;
     }
     if (validatedParams.tag) {
       query.tags = validatedParams.tag;
     }
-    const products = await db
+    const products = (await db
       .collection("products")
       .find(query)
       .sort({ createdAt: -1 })
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
         tags: 1,
         createdAt: 1,
       })
-      .toArray();
+      .toArray()) as Product[];
     return NextResponse.json(
       { products },
       {

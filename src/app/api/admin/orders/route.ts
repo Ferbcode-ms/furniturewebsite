@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { getSessionToken } from "@/lib/auth";
 
-export async function GET(_req: NextRequest) {
-  const token = getSessionToken();
+export async function GET() {
+  const token = await getSessionToken();
   if (!token)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -18,7 +18,7 @@ export async function GET(_req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const token = getSessionToken();
+  const token = await getSessionToken();
   if (!token)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id, status } = await req.json();
@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     await db.collection("orders").updateOne({ _id }, { $set: { status } });
     return NextResponse.json({ ok: true });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to update" }, { status: 500 });
   }
 }

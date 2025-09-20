@@ -2,12 +2,10 @@
 
 import { useState, memo } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { HierarchicalCategory } from "@/types";
 
 interface CategoryDropdownProps {
-  categories: Array<{
-    name: string;
-    subCategories: string[];
-  }>;
+  categories: HierarchicalCategory[];
   selectedCategory: string;
   onCategorySelect: (category: string) => void;
   loading?: boolean;

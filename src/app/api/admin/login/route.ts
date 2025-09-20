@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       maxAge: 60 * 60 * 1, // 1 hour
     });
     return res;
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

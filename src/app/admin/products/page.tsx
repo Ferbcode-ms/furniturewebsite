@@ -2,8 +2,9 @@
 import useSWR from "swr";
 import Container from "@/components/ui/Container";
 import Skeleton from "@/components/ui/Skeleton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { Product, Category } from "@/types";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -74,8 +75,8 @@ export default function AdminProductsPage() {
       setEditingId(null);
       toast.success(wasEdit ? "Product updated" : "Product created");
       mutate();
-    } catch (err: any) {
-      const msg = err?.message || "Failed";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed";
       setError(msg);
       toast.error(msg);
     }
@@ -89,12 +90,13 @@ export default function AdminProductsPage() {
       if (!res.ok) throw new Error("Delete failed");
       toast.success("Product deleted");
       mutate();
-    } catch (err: any) {
-      toast.error(err?.message || "Delete failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Delete failed";
+      toast.error(msg);
     }
   }
 
-  function edit(p: any) {
+  function edit(p: Product) {
     setEditingId(p._id);
     setForm({
       name: p.name || "",
@@ -115,12 +117,12 @@ export default function AdminProductsPage() {
     // Set the main category for editing
     if (p.category) {
       const categoryData = cats?.categories?.find(
-        (c: any) => c.name === p.category
+        (c: Category) => c.name === p.category
       );
       if (categoryData?.parentId) {
         // If it's a subcategory, find and set the parent category
         const parentCategory = cats?.categories?.find(
-          (c: any) => c._id === categoryData.parentId
+          (c: Category) => c._id === categoryData.parentId
         );
         setSelectedMainCategory(parentCategory?.name || "");
       } else {
@@ -170,15 +172,16 @@ export default function AdminProductsPage() {
 
   // Get main categories (categories without parentId)
   const mainCategories =
-    cats?.categories?.filter((c: any) => !c.parentId) || [];
+    cats?.categories?.filter((c: Category) => !c.parentId) || [];
 
   // Get sub-categories for selected main category
   const subCategories =
     cats?.categories?.filter(
-      (c: any) =>
+      (c: Category) =>
         c.parentId &&
-        mainCategories.find((main: any) => main.name === selectedMainCategory)
-          ?._id === c.parentId
+        mainCategories.find(
+          (main: Category) => main.name === selectedMainCategory
+        )?._id === c.parentId
     ) || [];
 
   // Handle main category selection
@@ -245,7 +248,7 @@ export default function AdminProductsPage() {
                   className="rounded-lg border px-3 py-2 w-full"
                 >
                   <option value="">Select Main Category</option>
-                  {mainCategories.map((c: any) => (
+                  {mainCategories.map((c: Category) => (
                     <option key={c._id} value={c.name}>
                       {c.name}
                     </option>
@@ -258,7 +261,7 @@ export default function AdminProductsPage() {
                     className="rounded-lg border px-3 py-2 w-full"
                   >
                     <option value="">Select Sub-Category</option>
-                    {subCategories.map((c: any) => (
+                    {subCategories.map((c: Category) => (
                       <option key={c._id} value={c.name}>
                         {c.name}
                       </option>
@@ -446,7 +449,7 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {data?.products?.map((p: any) => (
+            {data?.products?.map((p: Product) => (
               <tr key={p._id} className="border-b last:border-0">
                 <td className="py-2 pr-4">{p.name}</td>
                 <td className="py-2 pr-4">

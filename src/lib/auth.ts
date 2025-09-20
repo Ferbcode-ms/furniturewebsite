@@ -20,10 +20,12 @@ export function createSession(userId: string) {
   return token;
 }
 
-export function destroySession() {
-  cookies().delete(COOKIE_NAME);
+export async function destroySession() {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
 }
 
-export function getSessionToken() {
-  return cookies().get(COOKIE_NAME)?.value;
+export async function getSessionToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get(COOKIE_NAME)?.value;
 }

@@ -6,9 +6,10 @@ import CategoryDropdown from "@/components/CategoryDropdown";
 import ProductGridSkeleton from "@/components/ProductGridSkeleton";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Skeleton from "@/components/ui/Skeleton";
 import SimpleLoader from "@/components/SimpleLoader";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { Search, Grid, List } from "lucide-react";
+import Image from "next/image";
+import { Product, HierarchicalCategory } from "@/types";
 // Metadata moved to layout.tsx for client components
 
 export default function ProductsPage() {
@@ -25,11 +26,10 @@ export default function ProductsPage() {
     setSelected(current);
   }, [params]);
 
-  const [categories, setCategories] = useState<string[]>(["All"]);
-  const [hierarchicalCategories, setHierarchicalCategories] = useState<any[]>(
-    []
-  );
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [hierarchicalCategories, setHierarchicalCategories] = useState<
+    HierarchicalCategory[]
+  >([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loadingCats, setLoadingCats] = useState<boolean>(true);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
 
@@ -37,8 +37,7 @@ export default function ProductsPage() {
     async function loadCats() {
       try {
         const res = await fetch("/api/categories");
-        const data = await res.json();
-        setCategories(["All", ...(data.categories || [])]);
+        const data: { hierarchical: HierarchicalCategory[] } = await res.json();
         setHierarchicalCategories(data.hierarchical || []);
       } catch {
       } finally {
@@ -54,7 +53,7 @@ export default function ProductsPage() {
       setLoadingProducts(true);
       try {
         const res = await fetch("/api/products");
-        const data = await res.json();
+        const data: { products: Product[] } = await res.json();
         setAllProducts(data.products || []);
       } catch (error) {
         console.error("Failed to load products:", error);
@@ -273,7 +272,7 @@ export default function ProductsPage() {
             <ProductGridSkeleton count={6} viewMode={viewMode} />
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-              {filteredProducts.map((p: any) => (
+              {filteredProducts.map((p: Product) => (
                 <ProductCard
                   key={p._id || p.id}
                   id={String(p._id || p.id)}
@@ -285,15 +284,17 @@ export default function ProductsPage() {
             </div>
           ) : (
             <div className="space-y-3 lg:space-y-4">
-              {filteredProducts.map((p: any) => (
+              {filteredProducts.map((p: Product) => (
                 <div
                   key={p._id || p.id}
                   className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="w-full sm:w-20 h-32 sm:h-20 flex-shrink-0">
-                    <img
+                    <Image
                       src={p.image || "/placeholder.jpg"}
                       alt={p.name}
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover rounded-md"
                     />
                   </div>

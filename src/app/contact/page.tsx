@@ -2,7 +2,7 @@
 
 import Container from "@/components/ui/Container";
 import { useCart } from "@/components/cart/CartContext";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function OrderPage() {
@@ -35,8 +35,8 @@ export default function OrderPage() {
       toast.success("Order placed successfully! Thank you.");
       dispatch({ type: "CLEAR" });
       formElement?.reset();
-    } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setSubmitting(false);
     }

@@ -4,6 +4,7 @@ import Container from "@/components/ui/Container";
 import Skeleton from "@/components/ui/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Category } from "@/types";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -42,8 +43,8 @@ export default function AdminCategoriesPage() {
       setEditingId(null);
       toast.success(wasEdit ? "Category updated" : "Category created");
       mutate();
-    } catch (err: any) {
-      const msg = err?.message || "Failed";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed";
       setError(msg);
       toast.error(msg);
     }
@@ -57,12 +58,13 @@ export default function AdminCategoriesPage() {
       if (!res.ok) throw new Error("Delete failed");
       toast.success("Category deleted");
       mutate();
-    } catch (err: any) {
-      toast.error(err?.message || "Delete failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Delete failed";
+      toast.error(msg);
     }
   }
 
-  function edit(c: any) {
+  function edit(c: Category) {
     setEditingId(c._id);
     setName(c.name || "");
     setDescription(c.description || "");
@@ -113,8 +115,8 @@ export default function AdminCategoriesPage() {
         >
           <option value="">📁 Main Category</option>
           {data?.categories
-            ?.filter((c: any) => !c.parentId)
-            .map((c: any) => (
+            ?.filter((c: Category) => !c.parentId)
+            .map((c: Category) => (
               <option key={c._id} value={c._id}>
                 📁 {c.name}
               </option>
@@ -149,9 +151,9 @@ export default function AdminCategoriesPage() {
             </tr>
           </thead>
           <tbody>
-            {data?.categories?.map((c: any) => {
+            {data?.categories?.map((c: Category) => {
               const parentCategory = data?.categories?.find(
-                (p: any) => p._id === c.parentId
+                (p: Category) => p._id === c.parentId
               );
               return (
                 <tr key={c._id} className="border-b last:border-0">

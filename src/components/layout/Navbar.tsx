@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useCart } from "@/components/cart/CartContext";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ShoppingCart, LayoutDashboard, ChevronRight } from "lucide-react";
+import { HierarchicalCategory } from "@/types";
 // categories are now fetched from API
 
 const navLinks = [
@@ -14,12 +14,12 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { totalQuantity, state, dispatch, totalPrice } = useCart();
+  const { state, dispatch, totalPrice } = useCart();
   const [openMobile, setOpenMobile] = useState(false);
   const [navCategories, setNavCategories] = useState<string[]>([]);
-  const [hierarchicalCategories, setHierarchicalCategories] = useState<any[]>(
-    []
-  );
+  const [hierarchicalCategories, setHierarchicalCategories] = useState<
+    HierarchicalCategory[]
+  >([]);
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -33,7 +33,10 @@ export default function Navbar() {
     async function loadCats() {
       try {
         const res = await fetch("/api/categories");
-        const data = await res.json();
+        const data: {
+          categories: string[];
+          hierarchical: HierarchicalCategory[];
+        } = await res.json();
         setNavCategories(data.categories || []);
         setHierarchicalCategories(data.hierarchical || []);
       } catch {}
@@ -117,44 +120,46 @@ export default function Navbar() {
             <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute left-0 top-full mt-2 w-64 max-w-[90vw] rounded-xl border border-gray-200 bg-[#FAFAFA] shadow-xl p-4 z-40">
               <div className="space-y-1">
                 {hierarchicalCategories.length > 0
-                  ? hierarchicalCategories.map((category: any) => (
-                      <div
-                        key={category.name}
-                        className="group/category relative"
-                      >
-                        <Link
-                          href={`/products?category=${encodeURIComponent(
-                            category.name
-                          )}`}
-                          className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors"
+                  ? hierarchicalCategories.map(
+                      (category: HierarchicalCategory) => (
+                        <div
+                          key={category.name}
+                          className="group/category relative"
                         >
-                          {category.name}
-                        </Link>
+                          <Link
+                            href={`/products?category=${encodeURIComponent(
+                              category.name
+                            )}`}
+                            className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors"
+                          >
+                            {category.name}
+                          </Link>
 
-                        {/* Subcategories appear on the right */}
-                        {category.subCategories &&
-                          category.subCategories.length > 0 && (
-                            <div className="invisible opacity-0 group-hover/category:visible group-hover/category:opacity-100 transition-all duration-200 absolute left-full top-0 ml-2 w-48 max-w-[80vw] bg-white rounded-lg border border-gray-200 shadow-lg p-3 z-50">
-                              <div className="space-y-1">
-                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                                  {category.name}
+                          {/* Subcategories appear on the right */}
+                          {category.subCategories &&
+                            category.subCategories.length > 0 && (
+                              <div className="invisible opacity-0 group-hover/category:visible group-hover/category:opacity-100 transition-all duration-200 absolute left-full top-0 ml-2 w-48 max-w-[80vw] bg-white rounded-lg border border-gray-200 shadow-lg p-3 z-50">
+                                <div className="space-y-1">
+                                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                    {category.name}
+                                  </div>
+                                  {category.subCategories.map((sub: string) => (
+                                    <Link
+                                      key={sub}
+                                      href={`/products?category=${encodeURIComponent(
+                                        sub
+                                      )}`}
+                                      className="block px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                    >
+                                      {sub}
+                                    </Link>
+                                  ))}
                                 </div>
-                                {category.subCategories.map((sub: string) => (
-                                  <Link
-                                    key={sub}
-                                    href={`/products?category=${encodeURIComponent(
-                                      sub
-                                    )}`}
-                                    className="block px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                  >
-                                    {sub}
-                                  </Link>
-                                ))}
                               </div>
-                            </div>
-                          )}
-                      </div>
-                    ))
+                            )}
+                        </div>
+                      )
+                    )
                   : navCategories.map((c) => (
                       <Link
                         key={c}
