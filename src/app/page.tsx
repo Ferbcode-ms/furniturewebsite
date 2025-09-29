@@ -11,6 +11,7 @@ import CircularText from "@/components/CircularText";
 import CurvedLoop from "@/components/CurvedLoop";
 import SimpleLoader from "@/components/SimpleLoader";
 import { Product } from "@/types";
+import SplitText from "@/components/SplitText";
 
 export default function Home() {
   const [trending, setTrending] = useState<Product[]>([]);
@@ -68,13 +69,39 @@ export default function Home() {
 
           {/* Content with mobile overlay */}
           <div className="flex-1 w-full relative px-10 sm:px-0 z-10 md:z-auto">
-            <h1 className="mt-16 sm:mt-0 font-extrabold tracking-widest sm:tracking-wide leading-[1.5] [font-family:var(--font-display)] text-[40px] sm:text-[80px] md:text-[120px] lg:text-[160px] text-white md:text-black break-words">
-              FINE
+            <div className="mt-16 sm:mt-0 font-extrabold tracking-widest sm:tracking-wide leading-[1.5] [font-family:var(--font-display)] text-[40px] sm:text-[80px] md:text-[120px] lg:text-[160px] text-white md:text-black break-words">
+              <SplitText
+                text="FINE"
+                tag="h1"
+                className="block"
+                delay={80}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 140 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.15}
+                rootMargin="-100px"
+                textAlign="left"
+              />
               <br />
-              <span className=" md:bg-[#FAFAFA] rounded-xl sm:pr-10 py-1">
-                FURNISHINGS
+              <span className="  rounded-xl sm:pr-10 py-1 inline-block">
+                <SplitText
+                  text="FURNISHINGS"
+                  tag="h1"
+                  className="block"
+                  delay={80}
+                  duration={0.6}
+                  ease="power3.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 150 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.15}
+                  rootMargin="-100px"
+                  textAlign="left"
+                />
               </span>
-            </h1>
+            </div>
             <div className="flex flex-col gap-4 items-start w-full">
               <p className="mt-6 max-w-[80%] sm:text-lg text-white/90 md:text-neutral-400">
                 Choosing the right furniture for your home online will add

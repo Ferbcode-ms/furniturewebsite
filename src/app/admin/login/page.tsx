@@ -4,6 +4,17 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Shield, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -54,106 +65,96 @@ export default function AdminLoginPage() {
         </Link>
 
         {/* Main Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl mb-4">
+        <Card className="bg-[#F7F4EA]/80 backdrop-blur-sm border border-gray-200/50 shadow-xl">
+          <CardHeader className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl mx-auto mb-2">
               <Shield className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 [font-family:var(--font-display)]">
+            <CardTitle className="text-2xl [font-family:var(--font-display)]">
               Admin Portal
-            </h1>
-            <p className="text-gray-600 mt-2">
+            </CardTitle>
+            <CardDescription className="text-gray-600">
               Sign in to access the admin dashboard
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={submit} className="space-y-6">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder="admin@example.com"
-                  className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-colors"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="username"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="w-full h-12 pl-10 pr-12 rounded-xl border border-gray-200 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-colors"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full h-12 rounded-xl font-medium transition-all duration-200 ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed text-white"
-                  : "bg-black hover:bg-gray-900 text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
-              }`}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={submit} className="space-y-6">
+              {/* Email Field */}
+              <div className="space-y-2">
+                <Label>Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    type="email"
+                    placeholder="admin@example.com"
+                    className="h-12 pl-10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="username"
+                  />
                 </div>
-              ) : (
-                "Sign In"
-              )}
-            </button>
-          </form>
+              </div>
 
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
+              {/* Password Field */}
+              <div className="space-y-2">
+                <Label>Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="h-12 pl-10 pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button type="submit" disabled={loading} className="w-full h-12">
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing in...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-center">
             <p className="text-xs text-gray-500 text-center">
               Secure admin access • Protected by encryption
             </p>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

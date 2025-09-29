@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`${mulish.className} ${displayFont.variable} antialiased bg-[#FAFAFA] text-neutral-900`}
+        className={`${mulish.className} ${displayFont.variable} antialiased text-neutral-900`}
       >
         <CartProvider>
           <Navbar />

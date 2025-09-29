@@ -2,7 +2,7 @@
 
 import Container from "@/components/ui/Container";
 import ProductCard from "@/components/ProductCard";
-import CategoryDropdown from "@/components/CategoryDropdown";
+import CategoryDropdownMenu from "@/components/CategoryDropdownMenu";
 import ProductGridSkeleton from "@/components/ProductGridSkeleton";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -10,6 +10,14 @@ import SimpleLoader from "@/components/SimpleLoader";
 import { Search, Grid, List } from "lucide-react";
 import Image from "next/image";
 import { Product, HierarchicalCategory } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 // Metadata moved to layout.tsx for client components
 
 export default function ProductsPage() {
@@ -150,83 +158,77 @@ export default function ProductsPage() {
   return (
     <Container className="py-6 lg:py-10">
       {/* Header */}
-      <div className="mb-6 lg:mb-8">
-        <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight">
-          Products
-        </h1>
-        <p className="text-gray-600 mt-2 text-sm lg:text-base">
-          {selected === "All"
-            ? "Browse all our products"
-            : (() => {
-                const mainCategory = hierarchicalCategories.find(
-                  (cat) => cat.name === selected
-                );
-                if (
-                  mainCategory &&
-                  mainCategory.subCategories &&
-                  mainCategory.subCategories.length > 0
-                ) {
-                  return `Products in ${selected} and related subcategories`;
-                }
-                return `Products in ${selected} category`;
-              })()}
-        </p>
+      <div className="mb-6 lg:mb-8 ">
+        <div className="flex flex-row gap-4">
+          <div className="">
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight">
+              Products
+            </h1>
+            <p className="text-gray-600 mt-2 text-sm lg:text-base">
+              {selected === "All"
+                ? "Browse all our products"
+                : (() => {
+                    const mainCategory = hierarchicalCategories.find(
+                      (cat) => cat.name === selected
+                    );
+                    if (
+                      mainCategory &&
+                      mainCategory.subCategories &&
+                      mainCategory.subCategories.length > 0
+                    ) {
+                      return `Products in ${selected} and related subcategories`;
+                    }
+                    return `Products in ${selected} category`;
+                  })()}
+            </p>
+          </div>
+          <div className="ml-auto">
+            {/* Search Bar - Full width on mobile */}
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg   focus:border-transparent text-base"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Mobile-First Search and Filter Controls */}
         <div className="mt-4 lg:mt-6 space-y-4">
-          {/* Search Bar - Full width on mobile */}
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base"
-            />
-          </div>
-
           {/* Controls Row - Stack on mobile, side by side on desktop */}
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-            {/* Sort Dropdown */}
-            <div className="flex-1 sm:flex-initial">
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  handleSortChange(
-                    e.target.value as "name" | "price" | "newest"
-                  )
-                }
-                className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-sm"
-              >
-                <option value="newest">Newest First</option>
-                <option value="name">Name A-Z</option>
-                <option value="price">Price Low-High</option>
-              </select>
+            {/* Desktop Sidebar - Categories (shadcn DropdownMenu) */}
+            <div className="hidden lg:block lg:w-80 flex-shrink-0">
+              <div className="sticky top-24">
+                <CategoryDropdownMenu
+                  categories={hierarchicalCategories}
+                  selectedCategory={selected}
+                  onCategorySelect={handleSelect}
+                  loading={loadingCats}
+                />
+              </div>
             </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden self-start sm:self-auto">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 ${
-                  viewMode === "grid"
-                    ? "bg-black text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
+            {/* Sort Dropdown */}
+            <div className="flex-1 sm:flex-initial max-w-xs">
+              <Select
+                value={sortBy}
+                onValueChange={(v) =>
+                  handleSortChange(v as "name" | "price" | "newest")
+                }
               >
-                <Grid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 ${
-                  viewMode === "list"
-                    ? "bg-black text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <List className="h-4 w-4" />
-              </button>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="name">Name A-Z</SelectItem>
+                  <SelectItem value="price">Price Low-High</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -243,26 +245,14 @@ export default function ProductsPage() {
 
       {/* Main Content Layout */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-        {/* Mobile Category Dropdown - Top on mobile only */}
+        {/* Mobile Category Dropdown - shadcn DropdownMenu */}
         <div className="w-full lg:hidden">
-          <CategoryDropdown
+          <CategoryDropdownMenu
             categories={hierarchicalCategories}
             selectedCategory={selected}
             onCategorySelect={handleSelect}
             loading={loadingCats}
           />
-        </div>
-
-        {/* Desktop Sidebar - Categories */}
-        <div className="hidden lg:block lg:w-80 flex-shrink-0">
-          <div className="sticky top-24">
-            <CategoryDropdown
-              categories={hierarchicalCategories}
-              selectedCategory={selected}
-              onCategorySelect={handleSelect}
-              loading={loadingCats}
-            />
-          </div>
         </div>
 
         {/* Products Section */}
@@ -271,7 +261,7 @@ export default function ProductsPage() {
           {loadingProducts ? (
             <ProductGridSkeleton count={6} viewMode={viewMode} />
           ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
               {filteredProducts.map((p: Product) => (
                 <ProductCard
                   key={p._id || p.id}
@@ -313,12 +303,12 @@ export default function ProductsPage() {
                     <p className="text-lg sm:text-xl font-bold text-gray-900">
                       ${p.price?.toFixed(2) || "0.00"}
                     </p>
-                    <button
+                    <Button
                       onClick={() => router.push(`/products/${p._id || p.id}`)}
-                      className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors text-sm whitespace-nowrap"
+                      className="text-sm whitespace-nowrap"
                     >
                       View Details
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}

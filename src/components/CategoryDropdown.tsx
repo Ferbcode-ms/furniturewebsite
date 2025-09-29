@@ -44,7 +44,7 @@ const CategoryDropdown = memo(function CategoryDropdown({
 
   if (loading) {
     return (
-      <div className="w-full bg-white rounded-lg border border-gray-200 p-4">
+      <div className="w-full bg-[#F7F4EA] rounded-lg border border-gray-200 p-4">
         <div className="animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="space-y-2">
@@ -59,7 +59,7 @@ const CategoryDropdown = memo(function CategoryDropdown({
   }
 
   return (
-    <div className="w-full bg-white rounded-lg border border-gray-200 p-3 lg:p-4">
+    <div className="w-full bg-[#F7F4EA] rounded-lg border border-gray-200 p-3 lg:p-4">
       <h3 className="text-base lg:text-lg font-semibold mb-3 lg:mb-4 text-gray-800">
         Categories
       </h3>

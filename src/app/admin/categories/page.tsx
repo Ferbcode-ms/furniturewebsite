@@ -5,6 +5,29 @@ import Skeleton from "@/components/ui/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Category } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -108,65 +131,70 @@ export default function AdminCategoriesPage() {
           placeholder="Description"
           className="rounded-lg border px-3 py-2"
         />
-        <select
+        <Select
           value={parentId || ""}
-          onChange={(e) => setParentId(e.target.value || null)}
-          className="rounded-lg border px-3 py-2"
+          onValueChange={(v) => setParentId(v || null)}
         >
-          <option value="">📁 Main Category</option>
-          {data?.categories
-            ?.filter((c: Category) => !c.parentId)
-            .map((c: Category) => (
-              <option key={c._id} value={c._id}>
-                📁 {c.name}
-              </option>
-            ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="📁 Main Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">📁 Main Category</SelectItem>
+            {data?.categories
+              ?.filter((c: Category) => !c.parentId)
+              .map((c: Category) => (
+                <SelectItem key={c._id} value={c._id}>
+                  📁 {c.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
         <div className="flex gap-2">
-          <button className="rounded-full bg-black text-white px-5 py-2 text-sm hover:bg-gray-900 transition-colors cursor-pointer">
+          <Button type="submit" className="px-5 py-2 text-sm">
             {editingId ? "Save Changes" : "Add"}
-          </button>
+          </Button>
           {editingId && (
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={cancelEdit}
-              className="rounded-full border border-neutral-300 px-5 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
+              className="px-5 py-2 text-sm"
             >
               Cancel
-            </button>
+            </Button>
           )}
         </div>
         {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
       </form>
 
       <div className="mt-6 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="text-left border-b">
-              <th className="py-2 pr-4">Name</th>
-              <th className="py-2 pr-4">Description</th>
-              <th className="py-2 pr-4">Type</th>
-              <th className="py-2 pr-4">Parent</th>
-              <th className="py-2 pr-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="min-w-full text-sm">
+          <TableHeader>
+            <TableRow className="text-left border-b">
+              <TableHead className="py-2 pr-4">Name</TableHead>
+              <TableHead className="py-2 pr-4">Description</TableHead>
+              <TableHead className="py-2 pr-4">Type</TableHead>
+              <TableHead className="py-2 pr-4">Parent</TableHead>
+              <TableHead className="py-2 pr-4">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data?.categories?.map((c: Category) => {
               const parentCategory = data?.categories?.find(
                 (p: Category) => p._id === c.parentId
               );
               return (
-                <tr key={c._id} className="border-b last:border-0">
-                  <td className="py-2 pr-4">
+                <TableRow key={c._id} className="border-b last:border-0">
+                  <TableCell className="py-2 pr-4">
                     <div className="flex items-center gap-2">
                       {c.parentId && <span className="text-gray-400">└─</span>}
                       <span className={c.parentId ? "text-sm" : "font-medium"}>
                         {c.name}
                       </span>
                     </div>
-                  </td>
-                  <td className="py-2 pr-4">{c.description}</td>
-                  <td className="py-2 pr-4">
+                  </TableCell>
+                  <TableCell className="py-2 pr-4">{c.description}</TableCell>
+                  <TableCell className="py-2 pr-4">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         c.parentId
@@ -176,8 +204,8 @@ export default function AdminCategoriesPage() {
                     >
                       {c.parentId ? "Sub-category" : "Main Category"}
                     </span>
-                  </td>
-                  <td className="py-2 pr-4">
+                  </TableCell>
+                  <TableCell className="py-2 pr-4">
                     {parentCategory ? (
                       <div className="flex items-center gap-2">
                         <span className="text-green-600">📁</span>
@@ -186,28 +214,29 @@ export default function AdminCategoriesPage() {
                     ) : (
                       <span className="text-gray-400">-</span>
                     )}
-                  </td>
-                  <td className="py-2 pr-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => edit(c)}
-                        className="rounded-full border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 transition-colors cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => remove(c._id)}
-                        className="rounded-full border border-red-300 text-red-700 px-3 py-1 text-xs hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="py-2 pr-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => edit(c)}>
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => remove(c._id)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </Container>
   );

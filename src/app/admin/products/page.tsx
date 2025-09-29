@@ -5,6 +5,29 @@ import Skeleton from "@/components/ui/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Product, Category } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -242,31 +265,39 @@ export default function AdminProductsPage() {
             />
             <div className="grid sm:grid-cols-2 gap-3 sm:col-span-2">
               <div className="space-y-2">
-                <select
+                <Select
                   value={selectedMainCategory}
-                  onChange={(e) => handleMainCategoryChange(e.target.value)}
-                  className="rounded-lg border px-3 py-2 w-full"
+                  onValueChange={(v) => handleMainCategoryChange(v)}
                 >
-                  <option value="">Select Main Category</option>
-                  {mainCategories.map((c: Category) => (
-                    <option key={c._id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                {selectedMainCategory && (
-                  <select
-                    value={form.category}
-                    onChange={(e) => handleSubCategoryChange(e.target.value)}
-                    className="rounded-lg border px-3 py-2 w-full"
-                  >
-                    <option value="">Select Sub-Category</option>
-                    {subCategories.map((c: Category) => (
-                      <option key={c._id} value={c.name}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Main Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Select Main Category</SelectItem>
+                    {mainCategories.map((c: Category) => (
+                      <SelectItem key={c._id} value={c.name}>
                         {c.name}
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
+                  </SelectContent>
+                </Select>
+                {selectedMainCategory && (
+                  <Select
+                    value={form.category}
+                    onValueChange={(v) => handleSubCategoryChange(v)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Sub-Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Select Sub-Category</SelectItem>
+                      {subCategories.map((c: Category) => (
+                        <SelectItem key={c._id} value={c.name}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
               <div className="flex gap-2">
@@ -276,12 +307,13 @@ export default function AdminProductsPage() {
                   placeholder="New category"
                   className="flex-1 rounded-lg border px-3 py-2"
                 />
-                <button
+                <Button
                   onClick={addCategoryInline}
-                  className="rounded-lg border px-3 py-2"
+                  type="button"
+                  variant="outline"
                 >
                   Add
-                </button>
+                </Button>
               </div>
             </div>
             <div className="sm:col-span-2 flex items-center gap-4">
@@ -393,17 +425,18 @@ export default function AdminProductsPage() {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-3">
-            <button className="rounded-full bg-black text-white px-5 py-2 text-sm hover:bg-gray-900 transition-colors cursor-pointer">
+            <Button type="submit" className="px-5 py-2 text-sm">
               {editingId ? "Save Changes" : "Add"}
-            </button>
+            </Button>
             {editingId && (
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={cancelEdit}
-                className="rounded-full border border-neutral-300 px-5 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="px-5 py-2 text-sm"
               >
                 Cancel
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -437,51 +470,52 @@ export default function AdminProductsPage() {
       </form>
 
       <div className="mt-6 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="text-left border-b">
-              <th className="py-2 pr-4">Name</th>
-              <th className="py-2 pr-4">Price</th>
-              <th className="py-2 pr-4">Category</th>
-              <th className="py-2 pr-4">Materials</th>
-              <th className="py-2 pr-4">Tags</th>
-              <th className="py-2 pr-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="min-w-full text-sm">
+          <TableHeader>
+            <TableRow className="text-left border-b">
+              <TableHead className="py-2 pr-4">Name</TableHead>
+              <TableHead className="py-2 pr-4">Price</TableHead>
+              <TableHead className="py-2 pr-4">Category</TableHead>
+              <TableHead className="py-2 pr-4">Materials</TableHead>
+              <TableHead className="py-2 pr-4">Tags</TableHead>
+              <TableHead className="py-2 pr-4">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data?.products?.map((p: Product) => (
-              <tr key={p._id} className="border-b last:border-0">
-                <td className="py-2 pr-4">{p.name}</td>
-                <td className="py-2 pr-4">
+              <TableRow key={p._id} className="border-b last:border-0">
+                <TableCell className="py-2 pr-4">{p.name}</TableCell>
+                <TableCell className="py-2 pr-4">
                   ${p.price?.toFixed?.(2) ?? p.price}
-                </td>
-                <td className="py-2 pr-4">{p.category || "-"}</td>
-                <td className="py-2 pr-4 max-w-xs truncate">
+                </TableCell>
+                <TableCell className="py-2 pr-4">{p.category || "-"}</TableCell>
+                <TableCell className="py-2 pr-4 max-w-xs truncate">
                   {p.materials || "-"}
-                </td>
-                <td className="py-2 pr-4">
+                </TableCell>
+                <TableCell className="py-2 pr-4">
                   {Array.isArray(p.tags) ? p.tags.join(", ") : "-"}
-                </td>
-                <td className="py-2 pr-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => edit(p)}
-                      className="rounded-full border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 transition-colors cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => remove(p._id)}
-                      className="rounded-full border border-red-300 text-red-700 px-3 py-1 text-xs hover:bg-red-50 transition-colors cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                </TableCell>
+                <TableCell className="py-2 pr-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => edit(p)}>
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => remove(p._id)}>
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </Container>
   );

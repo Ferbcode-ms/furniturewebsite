@@ -5,6 +5,30 @@ import Skeleton from "@/components/ui/Skeleton";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Order, OrderItem } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -277,29 +301,24 @@ export default function AdminOrdersPage() {
           <div className="flex-[2] min-w-0 h-[60vh] sm:h-[70vh] lg:h-[calc(100vh-200px)] overflow-auto">
             {/* Filters */}
             <div className="mb-3 flex items-center gap-2 flex-wrap">
-              <button
-                className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer ${
-                  dateFilter === "all"
-                    ? "bg-black text-white border-black"
-                    : "hover:bg-gray-100"
-                }`}
+              <Button
+                variant={dateFilter === "all" ? "default" : "outline"}
+                size="sm"
                 onClick={() => handleFilterChange("all")}
               >
                 All
-              </button>
-              <button
-                className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer ${
-                  dateFilter === "today"
-                    ? "bg-black text-white border-black"
-                    : "hover:bg-gray-100"
-                }`}
+              </Button>
+              <Button
+                variant={dateFilter === "today" ? "default" : "outline"}
+                size="sm"
                 onClick={() => handleFilterChange("today")}
               >
                 Today
-              </button>
-              <div className="mx-2 h-5 w-px bg-neutral-200" />
-              <button
-                className="px-3 py-1.5 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+              </Button>
+              <Separator orientation="vertical" className="mx-2 h-5" />
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => {
                   const todayPending = filteredOrders.filter((o: Order) => {
                     return (o.status || "pending") === "pending";
@@ -311,9 +330,10 @@ export default function AdminOrdersPage() {
                 }}
               >
                 Download Today Pending Items
-              </button>
-              <button
-                className="px-3 py-1.5 rounded-full border text-xs hover:bg-gray-100 cursor-pointer"
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => {
                   downloadItemsCsvFor(
                     filteredOrders,
@@ -322,30 +342,33 @@ export default function AdminOrdersPage() {
                 }}
               >
                 Download Items CSV (current view)
-              </button>
+              </Button>
             </div>
             <div className="overflow-auto max-h-[50vh] sm:max-h-[60vh] lg:max-h-[calc(100vh-200px)]">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-left border-b">
-                    <th className="py-2 pr-2 sm:pr-4">Order ID</th>
-                    <th className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
+              <Table className="min-w-full text-sm">
+                <TableHeader>
+                  <TableRow className="text-left border-b">
+                    <TableHead className="py-2 pr-2 sm:pr-4">
+                      Order ID
+                    </TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                       Customer
-                    </th>
-                    <th className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                    </TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
                       Email
-                    </th>
-                    <th className="py-2 pr-2 sm:pr-4">Items</th>
-                    <th className="py-2 pr-2 sm:pr-4">Status</th>
-                    <th className="py-2 pr-2 sm:pr-4">Total</th>
-                    <th className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                    </TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4">Items</TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4">Status</TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4">Total</TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
                       Created
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </TableHead>
+                    <TableHead className="py-2 pr-2 sm:pr-4">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {filteredOrders.map((o: Order) => (
-                    <tr
+                    <TableRow
                       key={o._id}
                       className={`border-b last:border-0 cursor-pointer hover:bg-gray-50 ${
                         selectedId === o._id ? "bg-gray-50" : ""
@@ -354,28 +377,28 @@ export default function AdminOrdersPage() {
                         setSelectedId((prev) => (prev === o._id ? null : o._id))
                       }
                     >
-                      <td className="py-2 pr-2 sm:pr-4">
+                      <TableCell className="py-2 pr-2 sm:pr-4">
                         <div className="text-xs sm:text-sm font-mono">
                           {o._id.slice(-8)}
                         </div>
                         <div className="text-xs text-gray-500 sm:hidden">
                           {o.customer?.fullName || "-"}
                         </div>
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                         {o.customer?.fullName || "-"}
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
                         <div className="text-xs truncate max-w-[120px]">
                           {o.userEmail || o.customer?.email || "-"}
                         </div>
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4">
                         <div className="text-center">
                           {o.items?.length ?? 0}
                         </div>
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4">
                         <span
                           className={`px-2 py-1 rounded-full text-xs border ${
                             o.status === "forward"
@@ -385,24 +408,58 @@ export default function AdminOrdersPage() {
                         >
                           {o.status || "pending"}
                         </span>
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4">
                         <div className="text-sm font-medium">
                           ${o.total?.toFixed?.(2) || "-"}
                         </div>
                         <div className="text-xs text-gray-500 lg:hidden">
                           {new Date(o.createdAt).toLocaleDateString()}
                         </div>
-                      </td>
-                      <td className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
                         <div className="text-xs">
                           {new Date(o.createdAt).toLocaleString()}
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                      <TableCell className="py-2 pr-2 sm:pr-4">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                printInvoice(o);
+                              }}
+                            >
+                              Print invoice
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                downloadItemsCsvFor(
+                                  [o],
+                                  `order_${o._id}_items.csv`
+                                );
+                              }}
+                            >
+                              Download items CSV
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
 
@@ -480,16 +537,14 @@ export default function AdminOrdersPage() {
                       <h2 className="font-semibold mb-3 text-sm sm:text-base">
                         Items
                       </h2>
-                      <div className="rounded-xl border p-3 sm:p-4 bg-white mb-4">
+                      <div className="rounded-xl border p-3 sm:p-4 bg-[#F7F4EA] mb-4">
                         <h2 className="font-semibold mb-3 text-sm">
                           Status & Actions
                         </h2>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          <select
-                            className="rounded-lg border px-3 py-2 text-sm cursor-pointer flex-1"
+                          <Select
                             value={o.status || "pending"}
-                            onChange={async (e) => {
-                              const status = e.target.value;
+                            onValueChange={async (status) => {
                               try {
                                 const res = await fetch("/api/admin/orders", {
                                   method: "PUT",
@@ -510,15 +565,20 @@ export default function AdminOrdersPage() {
                               }
                             }}
                           >
-                            <option value="pending">pending</option>
-                            <option value="forward">forward</option>
-                          </select>
-                          <button
-                            className="rounded-full border px-3 py-2 text-sm hover:bg-neutral-50 transition-colors cursor-pointer"
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">pending</SelectItem>
+                              <SelectItem value="forward">forward</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="outline"
                             onClick={() => printInvoice(o)}
                           >
                             Print Invoice
-                          </button>
+                          </Button>
                         </div>
                       </div>
                       <div className="divide-y">
