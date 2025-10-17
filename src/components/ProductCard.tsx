@@ -3,15 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/cart/CartContext";
-import { Heart, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 
 export default function ProductCard({
   id,
   name,
   price,
   image,
-  tag,
-  variant = "square",
 }: {
   id: string;
   name: string;

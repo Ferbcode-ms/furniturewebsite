@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import Container from "@/components/Container";
 import Hero from "@/components/layout/Hero";
 import { useEffect, useRef, useState } from "react";
@@ -119,9 +120,11 @@ export default function Home() {
                 className="flex-shrink-0 w-[85vw] min-h-[60vh] flex items-center"
               >
                 <div className="flex flex-col items-center gap-6">
-                  <img
+                  <Image
                     src={images[index % images.length]}
                     alt={category.name}
+                    width={480}
+                    height={240}
                     className="h-60 w-full object-cover rounded-lg"
                   />
                   <div className="flex flex-col items-center text-center">
@@ -167,9 +170,11 @@ export default function Home() {
               className="category-item flex-shrink-0 w-[80vw] h-[100vh] flex items-center justify-center"
             >
               <div className="flex flex-col sm:flex-row items-center gap-10">
-                <img
+                <Image
                   src={images[index % images.length]} //
                   alt={category.name}
+                  width={280}
+                  height={320}
                   className="h-80 w-full sm:w-80 object-cover rounded-lg"
                 />
                 <div className="flex flex-col items-center sm:items-start">
@@ -219,9 +224,11 @@ export default function Home() {
           className="relative flex items-center justify-center min-h-[60vh] overflow-hidden"
         >
           {/* ✅ Moving image for parallax */}
-          <img
+          <Image
             src="https://plus.unsplash.com/premium_photo-1683120656283-64c0815111f2?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1170"
             alt="Background"
+            width={1170}
+            height={780}
             className="absolute inset-0 w-full h-full object-cover"
           />
 

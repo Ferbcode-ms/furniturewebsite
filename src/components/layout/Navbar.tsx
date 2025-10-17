@@ -6,17 +6,13 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ShoppingCart, LayoutDashboard } from "lucide-react";
 import AnimatedButton from "@/components/AnimatedButton";
-import { HierarchicalCategory } from "@/types";
+import Image from "next/image";
 
 const navLinks = [{ href: "/", label: "Home" }];
 
 export default function Navbar() {
   const { state, dispatch, totalPrice } = useCart();
   const [openMobile, setOpenMobile] = useState(false);
-  const [navCategories, setNavCategories] = useState<string[]>([]);
-  const [hierarchicalCategories, setHierarchicalCategories] = useState<
-    HierarchicalCategory[]
-  >([]);
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -24,20 +20,7 @@ export default function Navbar() {
 
   useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    async function loadCats() {
-      try {
-        const res = await fetch("/api/categories");
-        const data: {
-          categories: string[];
-          hierarchical: HierarchicalCategory[];
-        } = await res.json();
-        setNavCategories(data.categories || []);
-        setHierarchicalCategories(data.hierarchical || []);
-      } catch {}
-    }
-    loadCats();
-  }, []);
+  // Remove the loadCats effect since we're not using categories in the navbar anymore
 
   useEffect(() => {
     async function checkAdmin() {
@@ -242,9 +225,11 @@ export default function Navbar() {
                 <div className="max-h-[60vh] overflow-auto divide-y">
                   {state.items.map((item) => (
                     <div key={item.id} className="py-4 flex items-center gap-4">
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={80}
+                        height={80}
                         className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg object-cover border border-gray-200"
                       />
                       <div className="flex-1 min-w-0">

@@ -3,6 +3,7 @@ import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import Container from "@/components/Container";
+import Image from "next/image";
 import { Product } from "@/types";
 import AnimatedButton from "@/components/AnimatedButton";
 
@@ -77,9 +78,11 @@ const ArrivalsSection = ({ products }: ArrivalsSectionProps) => {
               className="relative flex-shrink-0 bg-[var(--productcard)] group hover:scale-[1.02] transition-transform duration-300"
             >
               <div className="relative w-[290px] sm:w-[300px] md:w-[350px]">
-                <img
+                <Image
                   src={item.image}
                   alt={item.name}
+                  width={350}
+                  height={262}
                   draggable={false}
                   className="w-full p-5 my-10 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105"
                 />

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
+import Image from "next/image";
 import { Draggable } from "gsap/Draggable";
 import Container from "@/components/Container";
 import { Product } from "@/types";
@@ -76,9 +77,11 @@ const TrendingSection = ({ products }: TrendingSectionProps) => {
               className="relative flex-shrink-0 bg-[var(--productcard)] group"
             >
               <div className="relative w-[290px] sm:w-[300px] md:w-[350px]">
-                <img
+                <Image
                   src={item.image}
                   alt={item.name}
+                  width={350}
+                  height={262}
                   draggable={false}
                   className="w-full p-5 my-5 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105"
                 />

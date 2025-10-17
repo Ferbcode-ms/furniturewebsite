@@ -9,14 +9,12 @@ interface CategoryDropdownMenuProps {
   categories: HierarchicalCategory[];
   selectedCategory: string;
   onCategorySelect: (category: string) => void;
-  loading?: boolean;
 }
 
 const CategoryDropdownMenu = memo(function CategoryDropdownMenu({
   categories,
   selectedCategory,
   onCategorySelect,
-  loading = false,
 }: CategoryDropdownMenuProps) {
   const selectedLabel = selectedCategory || "All";
 

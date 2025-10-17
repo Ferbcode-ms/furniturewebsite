@@ -5,9 +5,6 @@ import Skeleton from "@/components/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Category } from "@/types";
-// removed ui imports
-import { MoreHorizontal } from "lucide-react";
-
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminCategoriesPage() {

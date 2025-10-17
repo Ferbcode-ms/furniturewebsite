@@ -2,13 +2,11 @@
 
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
-import CategoryDropdownMenu from "@/components/CategoryDropdownMenu";
 import ProductGridSkeleton from "@/components/ProductGridSkeleton";
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import SimpleLoader from "@/components/SimpleLoader";
-import { Search, Grid, List } from "lucide-react";
-import Image from "next/image";
+import { Search } from "lucide-react";
 import { Product, HierarchicalCategory } from "@/types";
 import { motion } from "framer-motion";
 import AnimatedButton from "@/components/AnimatedButton";
@@ -19,11 +17,9 @@ import AnimatedButton from "@/components/AnimatedButton";
 
 export default function ProductsPage() {
   const params = useSearchParams();
-  const router = useRouter();
   const initial = params.get("category") ?? "All";
   const [selected, setSelected] = useState<string>(initial);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"name" | "price" | "newest">("newest");
 
   useEffect(() => {
@@ -234,17 +230,13 @@ export default function ProductsPage() {
 
       {/* Products Grid with Animation */}
       {loadingProducts ? (
-        <ProductGridSkeleton count={8} viewMode={viewMode} />
+        <ProductGridSkeleton count={8} />
       ) : (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className={
-            viewMode === "grid"
-              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-              : "space-y-4"
-          }
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
           {filteredProducts.map((p: Product, i) => (
             <motion.div
