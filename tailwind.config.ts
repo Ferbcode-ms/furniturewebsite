@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        mulish: ["var(--font-mulish)", "sans-serif"],
+        manrope: ["var(--font-manrope)", "sans-serif"],
         display: ["var(--font-display)", "sans-serif"],
       },
     },

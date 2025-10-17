@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Mulish, Anton } from "next/font/google";
+import { Manrope, Anton } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartContext";
 import Navbar from "@/components/layout/Navbar";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
-// Welcome screen removed
 import ToastProvider from "@/components/ToastProvider";
+import LenisProvider from "@/components/LenisProvider";
+// import ClientLayout from "@/components/ClientLayout";
 
-const mulish = Mulish({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-mulish",
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
 });
 
 const displayFont = Anton({
@@ -32,14 +33,16 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`${mulish.className} ${displayFont.variable} antialiased text-neutral-900`}
+        className={`${manrope.className} ${displayFont.variable} antialiased bg-[#f4f0ea] text-[#4d3d30] uppercase`}
       >
-        <CartProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <ConditionalFooter />
-          <ToastProvider />
-        </CartProvider>
+        <LenisProvider>
+          <CartProvider>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <ConditionalFooter />
+            <ToastProvider />
+          </CartProvider>
+        </LenisProvider>
       </body>
     </html>
   );

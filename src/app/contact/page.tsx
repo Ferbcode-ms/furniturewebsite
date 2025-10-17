@@ -1,6 +1,6 @@
 "use client";
 
-import Container from "@/components/ui/Container";
+import Container from "@/components/Container";
 import { useCart } from "@/components/cart/CartContext";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";

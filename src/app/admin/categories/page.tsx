@@ -1,32 +1,11 @@
 "use client";
 import useSWR from "swr";
-import Container from "@/components/ui/Container";
-import Skeleton from "@/components/ui/Skeleton";
+import Container from "@/components/Container";
+import Skeleton from "@/components/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Category } from "@/types";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// removed ui imports
 import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -103,8 +82,10 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <Container className="pt-10">
-      <h1 className="text-3xl font-extrabold tracking-tight">Categories</h1>
+    <Container className="m-30">
+      <h1 className="text-3xl font-extrabold tracking-tight ml-20">
+        Categories
+      </h1>
       {!data && (
         <div className="mt-6 space-y-3">
           <Skeleton className="h-10 w-full max-w-xl" />
@@ -116,7 +97,7 @@ export default function AdminCategoriesPage() {
       )}
       <form
         onSubmit={createCategory}
-        className="mt-6 grid sm:grid-cols-4 gap-3 max-w-3xl"
+        className="mx-20 my-10 grid sm:grid-cols-4 gap-3 max-w-3xl"
       >
         <input
           value={name}
@@ -131,70 +112,68 @@ export default function AdminCategoriesPage() {
           placeholder="Description"
           className="rounded-lg border px-3 py-2"
         />
-        <Select
+        <select
           value={parentId || ""}
-          onValueChange={(v) => setParentId(v || null)}
+          onChange={(e) => setParentId(e.target.value || null)}
+          className="rounded-lg border px-3 py-2"
         >
-          <SelectTrigger>
-            <SelectValue placeholder="📁 Main Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">📁 Main Category</SelectItem>
-            {data?.categories
-              ?.filter((c: Category) => !c.parentId)
-              .map((c: Category) => (
-                <SelectItem key={c._id} value={c._id}>
-                  📁 {c.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+          <option value="">📁 Main Category</option>
+          {data?.categories
+            ?.filter((c: Category) => !c.parentId)
+            .map((c: Category) => (
+              <option key={c._id} value={c._id}>
+                📁 {c.name}
+              </option>
+            ))}
+        </select>
         <div className="flex gap-2">
-          <Button type="submit" className="px-5 py-2 text-sm">
+          <button
+            type="submit"
+            className="px-5 py-2 text-sm rounded-lg bg-black text-white"
+          >
             {editingId ? "Save Changes" : "Add"}
-          </Button>
+          </button>
           {editingId && (
-            <Button
+            <button
               type="button"
-              variant="outline"
               onClick={cancelEdit}
-              className="px-5 py-2 text-sm"
+              className="px-5 py-2 text-sm rounded-lg border"
             >
               Cancel
-            </Button>
+            </button>
           )}
         </div>
         {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
       </form>
 
-      <div className="mt-6 overflow-x-auto">
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow className="text-left border-b">
-              <TableHead className="py-2 pr-4">Name</TableHead>
-              <TableHead className="py-2 pr-4">Description</TableHead>
-              <TableHead className="py-2 pr-4">Type</TableHead>
-              <TableHead className="py-2 pr-4">Parent</TableHead>
-              <TableHead className="py-2 pr-4">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="mx-20 overflow-x-auto">
+        <table className="min-w-full text-sm w-full">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="py-2 pr-4">Name</th>
+              <th className="py-2 pr-4">Description</th>
+              <th className="py-2 pr-4">Type</th>
+              <th className="py-2 pr-4">Parent</th>
+              <th className="py-2 pr-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {data?.categories?.map((c: Category) => {
               const parentCategory = data?.categories?.find(
                 (p: Category) => p._id === c.parentId
               );
               return (
-                <TableRow key={c._id} className="border-b last:border-0">
-                  <TableCell className="py-2 pr-4">
+                <tr key={c._id} className="border-b last:border-0">
+                  <td className="py-2 pr-4">
                     <div className="flex items-center gap-2">
                       {c.parentId && <span className="text-gray-400">└─</span>}
                       <span className={c.parentId ? "text-sm" : "font-medium"}>
                         {c.name}
                       </span>
                     </div>
-                  </TableCell>
-                  <TableCell className="py-2 pr-4">{c.description}</TableCell>
-                  <TableCell className="py-2 pr-4">
+                  </td>
+                  <td className="py-2 pr-4">{c.description}</td>
+                  <td className="py-2 pr-4">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         c.parentId
@@ -204,8 +183,8 @@ export default function AdminCategoriesPage() {
                     >
                       {c.parentId ? "Sub-category" : "Main Category"}
                     </span>
-                  </TableCell>
-                  <TableCell className="py-2 pr-4">
+                  </td>
+                  <td className="py-2 pr-4">
                     {parentCategory ? (
                       <div className="flex items-center gap-2">
                         <span className="text-green-600">📁</span>
@@ -214,29 +193,28 @@ export default function AdminCategoriesPage() {
                     ) : (
                       <span className="text-gray-400">-</span>
                     )}
-                  </TableCell>
-                  <TableCell className="py-2 pr-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => edit(c)}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => remove(c._id)}>
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td className="py-2 pr-4">
+                    <div className="inline-flex gap-2">
+                      <button
+                        className="rounded-lg border px-3 py-1 text-sm"
+                        onClick={() => edit(c)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="rounded-lg border px-3 py-1 text-sm"
+                        onClick={() => remove(c._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </Container>
   );

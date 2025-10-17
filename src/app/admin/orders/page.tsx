@@ -1,33 +1,11 @@
 "use client";
 import useSWR from "swr";
-import Container from "@/components/ui/Container";
-import Skeleton from "@/components/ui/Skeleton";
+import Container from "@/components/Container";
+import Skeleton from "@/components/Skeleton";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Order, OrderItem } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// removed ui imports
 import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -277,8 +255,8 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <Container className="pt-6 sm:pt-8 lg:pt-10">
-      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+    <Container className="m-20 sm:pt-8 lg:pt-10">
+      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight ml-20">
         Orders
       </h1>
       {isLoading && (
@@ -296,29 +274,30 @@ export default function AdminOrdersPage() {
         <p className="mt-4 text-sm text-red-600">Failed to load orders</p>
       )}
       {data && (
-        <div className="mt-4 sm:mt-6 flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <div className="m-20 sm:mt-6 flex flex-col lg:flex-row gap-4 sm:gap-6 ">
           {/* Left: Orders table */}
-          <div className="flex-[2] min-w-0 h-[60vh] sm:h-[70vh] lg:h-[calc(100vh-200px)] overflow-auto">
+          <div className="flex flex-col">
             {/* Filters */}
             <div className="mb-3 flex items-center gap-2 flex-wrap">
-              <Button
-                variant={dateFilter === "all" ? "default" : "outline"}
-                size="sm"
+              <button
                 onClick={() => handleFilterChange("all")}
+                className={`px-3 py-1.5 text-sm rounded-md border ${
+                  dateFilter === "all" ? "bg-black text-white" : "bg-white"
+                }`}
               >
                 All
-              </Button>
-              <Button
-                variant={dateFilter === "today" ? "default" : "outline"}
-                size="sm"
+              </button>
+              <button
                 onClick={() => handleFilterChange("today")}
+                className={`px-3 py-1.5 text-sm rounded-md border ${
+                  dateFilter === "today" ? "bg-black text-white" : "bg-white"
+                }`}
               >
                 Today
-              </Button>
-              <Separator orientation="vertical" className="mx-2 h-5" />
-              <Button
-                variant="outline"
-                size="sm"
+              </button>
+              <div className="mx-2 h-5 w-px bg-neutral-200" />
+              <button
+                className="px-3 py-1.5 text-sm rounded-md border"
                 onClick={() => {
                   const todayPending = filteredOrders.filter((o: Order) => {
                     return (o.status || "pending") === "pending";
@@ -330,10 +309,9 @@ export default function AdminOrdersPage() {
                 }}
               >
                 Download Today Pending Items
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+              </button>
+              <button
+                className="px-3 py-1.5 text-sm rounded-md border"
                 onClick={() => {
                   downloadItemsCsvFor(
                     filteredOrders,
@@ -342,33 +320,31 @@ export default function AdminOrdersPage() {
                 }}
               >
                 Download Items CSV (current view)
-              </Button>
+              </button>
             </div>
             <div className="overflow-auto max-h-[50vh] sm:max-h-[60vh] lg:max-h-[calc(100vh-200px)]">
-              <Table className="min-w-full text-sm">
-                <TableHeader>
-                  <TableRow className="text-left border-b">
-                    <TableHead className="py-2 pr-2 sm:pr-4">
-                      Order ID
-                    </TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
+              <table className="min-w-full text-sm w-full">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-2 pr-2 sm:pr-4">Order ID</th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                       Customer
-                    </TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                    </th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
                       Email
-                    </TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4">Items</TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4">Status</TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4">Total</TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                    </th>
+                    <th className="py-2 pr-2 sm:pr-4">Items</th>
+                    <th className="py-2 pr-2 sm:pr-4">Status</th>
+                    <th className="py-2 pr-2 sm:pr-4">Total</th>
+                    <th className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
                       Created
-                    </TableHead>
-                    <TableHead className="py-2 pr-2 sm:pr-4">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                    </th>
+                    <th className="py-2 pr-2 sm:pr-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {filteredOrders.map((o: Order) => (
-                    <TableRow
+                    <tr
                       key={o._id}
                       className={`border-b last:border-0 cursor-pointer hover:bg-gray-50 ${
                         selectedId === o._id ? "bg-gray-50" : ""
@@ -377,28 +353,28 @@ export default function AdminOrdersPage() {
                         setSelectedId((prev) => (prev === o._id ? null : o._id))
                       }
                     >
-                      <TableCell className="py-2 pr-2 sm:pr-4">
+                      <td className="py-2 pr-2 sm:pr-4">
                         <div className="text-xs sm:text-sm font-mono">
                           {o._id.slice(-8)}
                         </div>
                         <div className="text-xs text-gray-500 sm:hidden">
                           {o.customer?.fullName || "-"}
                         </div>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                         {o.customer?.fullName || "-"}
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4 hidden md:table-cell">
                         <div className="text-xs truncate max-w-[120px]">
                           {o.userEmail || o.customer?.email || "-"}
                         </div>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4">
                         <div className="text-center">
                           {o.items?.length ?? 0}
                         </div>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4">
                         <span
                           className={`px-2 py-1 rounded-full text-xs border ${
                             o.status === "forward"
@@ -408,58 +384,48 @@ export default function AdminOrdersPage() {
                         >
                           {o.status || "pending"}
                         </span>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4">
                         <div className="text-sm font-medium">
                           ${o.total?.toFixed?.(2) || "-"}
                         </div>
                         <div className="text-xs text-gray-500 lg:hidden">
                           {new Date(o.createdAt).toLocaleDateString()}
                         </div>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4 hidden lg:table-cell">
                         <div className="text-xs">
                           {new Date(o.createdAt).toLocaleString()}
                         </div>
-                      </TableCell>
-                      <TableCell className="py-2 pr-2 sm:pr-4">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                printInvoice(o);
-                              }}
-                            >
-                              Print invoice
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                downloadItemsCsvFor(
-                                  [o],
-                                  `order_${o._id}_items.csv`
-                                );
-                              }}
-                            >
-                              Download items CSV
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                      <td className="py-2 pr-2 sm:pr-4">
+                        <div
+                          className="inline-flex gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            className="rounded-lg border px-3 py-1 text-sm"
+                            onClick={() => printInvoice(o)}
+                          >
+                            Print invoice
+                          </button>
+                          <button
+                            className="rounded-lg border px-3 py-1 text-sm"
+                            onClick={() =>
+                              downloadItemsCsvFor(
+                                [o],
+                                `order_${o._id}_items.csv`
+                              )
+                            }
+                          >
+                            Download items CSV
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -542,9 +508,12 @@ export default function AdminOrdersPage() {
                           Status & Actions
                         </h2>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          <Select
+                          <select
                             value={o.status || "pending"}
-                            onValueChange={async (status) => {
+                            onChange={async (ev) => {
+                              const status = ev.target.value as
+                                | "pending"
+                                | "forward";
                               try {
                                 const res = await fetch("/api/admin/orders", {
                                   method: "PUT",
@@ -564,21 +533,17 @@ export default function AdminOrdersPage() {
                                 toast.error(msg);
                               }
                             }}
+                            className="flex-1 rounded-lg border px-3 py-2"
                           >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pending">pending</SelectItem>
-                              <SelectItem value="forward">forward</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button
-                            variant="outline"
+                            <option value="pending">pending</option>
+                            <option value="forward">forward</option>
+                          </select>
+                          <button
+                            className="rounded-lg border px-3 py-2"
                             onClick={() => printInvoice(o)}
                           >
                             Print Invoice
-                          </Button>
+                          </button>
                         </div>
                       </div>
                       <div className="divide-y">

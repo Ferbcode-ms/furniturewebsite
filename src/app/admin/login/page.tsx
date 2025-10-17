@@ -4,17 +4,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Shield, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+// removed ui imports
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -65,26 +55,28 @@ export default function AdminLoginPage() {
         </Link>
 
         {/* Main Card */}
-        <Card className="bg-[#F7F4EA]/80 backdrop-blur-sm border border-gray-200/50 shadow-xl">
-          <CardHeader className="text-center">
+        <div className="bg-[#F7F4EA]/80 backdrop-blur-sm border border-gray-200/50 shadow-xl rounded-xl">
+          <div className="text-center p-6">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl mx-auto mb-2">
               <Shield className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-2xl [font-family:var(--font-display)]">
+            <div className="text-2xl [font-family:var(--font-display)] font-semibold">
               Admin Portal
-            </CardTitle>
-            <CardDescription className="text-gray-600">
+            </div>
+            <div className="text-gray-600">
               Sign in to access the admin dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </div>
+          </div>
+          <div className="px-6 pb-6">
             <form onSubmit={submit} className="space-y-6">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label>Email Address</Label>
+                <label className="text-sm font-medium leading-none">
+                  Email Address
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
+                  <input
                     type="email"
                     placeholder="admin@example.com"
                     className="h-12 pl-10"
@@ -98,10 +90,12 @@ export default function AdminLoginPage() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label>Password</Label>
+                <label className="text-sm font-medium leading-none">
+                  Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
+                  <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     className="h-12 pl-10 pr-10"
@@ -110,10 +104,8 @@ export default function AdminLoginPage() {
                     required
                     autoComplete="current-password"
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="icon"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900"
                     aria-label={
@@ -125,7 +117,7 @@ export default function AdminLoginPage() {
                     ) : (
                       <Eye className="w-4 h-4" />
                     )}
-                  </Button>
+                  </button>
                 </div>
               </div>
 
@@ -137,7 +129,11 @@ export default function AdminLoginPage() {
               )}
 
               {/* Submit Button */}
-              <Button type="submit" disabled={loading} className="w-full h-12">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 rounded-md bg-black text-white"
+              >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -146,15 +142,15 @@ export default function AdminLoginPage() {
                 ) : (
                   "Sign In"
                 )}
-              </Button>
+              </button>
             </form>
-          </CardContent>
-          <CardFooter className="flex justify-center">
+          </div>
+          <div className="flex justify-center pb-6">
             <p className="text-xs text-gray-500 text-center">
               Secure admin access • Protected by encryption
             </p>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

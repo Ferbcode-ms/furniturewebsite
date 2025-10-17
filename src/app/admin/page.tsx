@@ -1,10 +1,10 @@
-import Container from "@/components/ui/Container";
+import Container from "@/components/Container";
 import Link from "next/link";
 
 export default function AdminHome() {
   return (
-    <Container className="pt-10">
-      <div className="flex items-center justify-between">
+    <Container className="my-30">
+      <div className="flex items-center justify-between mx-10 mb-10">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Admin</h1>
           <p className="text-sm text-neutral-600 mt-1">
@@ -19,7 +19,7 @@ export default function AdminHome() {
         </a>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className=" grid gap-2 sm:grid-cols-2 lg:grid-cols-3 mx-10">
         <Link
           href="/admin/orders"
           className="group rounded-2xl border bg-[#FAFAFA] p-5 hover:shadow-md transition"

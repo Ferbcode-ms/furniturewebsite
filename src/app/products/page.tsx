@@ -1,6 +1,6 @@
 "use client";
 
-import Container from "@/components/ui/Container";
+import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
 import CategoryDropdownMenu from "@/components/CategoryDropdownMenu";
 import ProductGridSkeleton from "@/components/ProductGridSkeleton";
@@ -10,15 +10,12 @@ import SimpleLoader from "@/components/SimpleLoader";
 import { Search, Grid, List } from "lucide-react";
 import Image from "next/image";
 import { Product, HierarchicalCategory } from "@/types";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { motion } from "framer-motion";
+import AnimatedButton from "@/components/AnimatedButton";
+
 // Metadata moved to layout.tsx for client components
+
+// Import Select components from shadcn/ui
 
 export default function ProductsPage() {
   const params = useSearchParams();
@@ -156,195 +153,154 @@ export default function ProductsPage() {
   }
 
   return (
-    <Container className="py-6 lg:py-10">
-      {/* Header */}
-      <div className="mb-6 lg:mb-8 ">
-        <div className="flex flex-row gap-4">
-          <div className="">
-            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight">
-              Products
-            </h1>
-            <p className="text-gray-600 mt-2 text-sm lg:text-base">
-              {selected === "All"
-                ? "Browse all our products"
-                : (() => {
-                    const mainCategory = hierarchicalCategories.find(
-                      (cat) => cat.name === selected
-                    );
-                    if (
-                      mainCategory &&
-                      mainCategory.subCategories &&
-                      mainCategory.subCategories.length > 0
-                    ) {
-                      return `Products in ${selected} and related subcategories`;
-                    }
-                    return `Products in ${selected} category`;
-                  })()}
-            </p>
-          </div>
-          <div className="ml-auto">
-            {/* Search Bar - Full width on mobile */}
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg   focus:border-transparent text-base"
-              />
-            </div>
-          </div>
-        </div>
+    <Container className="py-6 lg:py-10 p-20 mt-10">
+      {/* Enhanced Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-12"
+      >
+        <h1 className=" tracking-wide leading-[1.2]  text-[40px] sm:text-[56px] md:text-[64px] lg:text-[80px]">
+          {selected === "All" ? "COLLECTION" : selected.toUpperCase()}
+        </h1>
+        <p className="mt-4 text-neutral-600 text-sm sm:text-base max-w-2xl">
+          {selected === "All"
+            ? "Discover our carefully curated collection of premium furniture pieces."
+            : `Explore our ${selected.toLowerCase()} collection, designed for modern living.`}
+        </p>
+      </motion.div>
 
-        {/* Mobile-First Search and Filter Controls */}
-        <div className="mt-4 lg:mt-6 space-y-4">
-          {/* Controls Row - Stack on mobile, side by side on desktop */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-            {/* Desktop Sidebar - Categories (shadcn DropdownMenu) */}
-            <div className="hidden lg:block lg:w-80 flex-shrink-0">
-              <div className="sticky top-24">
-                <CategoryDropdownMenu
-                  categories={hierarchicalCategories}
-                  selectedCategory={selected}
-                  onCategorySelect={handleSelect}
-                  loading={loadingCats}
-                />
-              </div>
-            </div>
-            {/* Sort Dropdown */}
-            <div className="flex-1 sm:flex-initial max-w-xs">
-              <Select
-                value={sortBy}
-                onValueChange={(v) =>
-                  handleSortChange(v as "name" | "price" | "newest")
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="name">Name A-Z</SelectItem>
-                  <SelectItem value="price">Price Low-High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <div className="text-sm text-gray-600">
-            {loadingProducts
-              ? "Loading products..."
-              : `${filteredProducts.length} product${
-                  filteredProducts.length !== 1 ? "s" : ""
-                } found`}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-        {/* Mobile Category Dropdown - shadcn DropdownMenu */}
-        <div className="w-full lg:hidden">
-          <CategoryDropdownMenu
-            categories={hierarchicalCategories}
-            selectedCategory={selected}
-            onCategorySelect={handleSelect}
-            loading={loadingCats}
+      {/* Search and Filters Bar */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400 h-5 w-5" />
+          <input
+            type="text"
+            placeholder="Search furniture..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-background rounded-4xl focus:outline-none border-1 border-[var(--textcolor)] text-[var(--textcolor)]"
           />
         </div>
 
-        {/* Products Section */}
-        <div className="flex-1">
-          {/* Products Display */}
-          {loadingProducts ? (
-            <ProductGridSkeleton count={6} viewMode={viewMode} />
-          ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-              {filteredProducts.map((p: Product) => (
-                <ProductCard
-                  key={p._id || p.id}
-                  id={String(p._id || p.id)}
-                  name={p.name}
-                  price={p.price}
-                  image={p.image}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-3 lg:space-y-4">
-              {filteredProducts.map((p: Product) => (
-                <div
-                  key={p._id || p.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                >
-                  <div className="w-full sm:w-20 h-32 sm:h-20 flex-shrink-0">
-                    <Image
-                      src={p.image || "/placeholder.jpg"}
-                      alt={p.name}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-cover rounded-md"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0 w-full sm:w-auto">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                      {p.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 truncate mt-1">
-                      {p.description || "No description available"}
-                    </p>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                      Category: {p.category || "Uncategorized"}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between w-full sm:w-auto sm:flex-col sm:text-right gap-3 sm:gap-0">
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">
-                      ${p.price?.toFixed(2) || "0.00"}
-                    </p>
-                    <Button
-                      onClick={() => router.push(`/products/${p._id || p.id}`)}
-                      className="text-sm whitespace-nowrap"
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!loadingProducts && filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search className="h-8 w-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No products found
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {searchQuery.trim()
-                    ? `No products match "${searchQuery}". Try adjusting your search or filters.`
-                    : "No products available in this category. Try selecting a different category or browse all products."}
-                </p>
-                {(searchQuery.trim() || selected !== "All") && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      handleSelect("All");
-                    }}
-                    className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
-                  >
-                    Clear Filters
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+        <div className="flex gap-3">
+          <select
+            value={sortBy}
+            onChange={(e) =>
+              handleSortChange(e.target.value as "name" | "price" | "newest")
+            }
+            className="px-6 py-3 border-1 border-[var(--textcolor)] rounded-4xl focus:outline-none "
+          >
+            <option
+              value="newest"
+              className="bg-[var(--background)] rounded-4xl p-2 hover:bg-[var(--textcolor)]"
+            >
+              NEWEST FIRST
+            </option>
+            <option value="price">PRICE: LOW TO HIGH</option>
+            <option value="name">NAME: A TO Z</option>
+          </select>
         </div>
+      </div>
+
+      {/* Categories List */}
+      <div className="mb-8 overflow-x-auto">
+        <div className="flex gap-3 pb-2">
+          <button
+            onClick={() => handleSelect("All")}
+            className={`px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors border-1 border-[var(--textcolor)] cursor-pointer ${
+              selected === "All"
+                ? "bg-[var(--textcolor)] text-background"
+                : "bg-background "
+            }`}
+          >
+            ALL
+          </button>
+          {hierarchicalCategories.map((cat) => (
+            <button
+              key={cat.name}
+              onClick={() => handleSelect(cat.name)}
+              className={`px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors  border-1 border-[var(--textcolor)] cursor-pointer ${
+                selected === cat.name
+                  ? "bg-[var(--textcolor)] text-background"
+                  : "bg-background"
+              }`}
+            >
+              {cat.name.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Products Grid with Animation */}
+      {loadingProducts ? (
+        <ProductGridSkeleton count={8} viewMode={viewMode} />
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className={
+            viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+              : "space-y-4"
+          }
+        >
+          {filteredProducts.map((p: Product, i) => (
+            <motion.div
+              key={p._id || p.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <ProductCard
+                id={String(p._id || p.id)}
+                name={p.name}
+                price={p.price}
+                image={p.image}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* Enhanced Empty State */}
+      {!loadingProducts && filteredProducts.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <div className="max-w-md mx-auto text-[var(--textcolor)]">
+            <Search className="h-12 w-12 mx-auto mb-6 " />
+            <h3 className="text-2xl font-bold mb-4">No products found</h3>
+            <p className="text-neutral-600 mb-8">
+              {searchQuery.trim()
+                ? `We couldn't find any products matching "${searchQuery}"`
+                : "No products available in this category yet."}
+            </p>
+            {(searchQuery.trim() || selected !== "All") && (
+              <AnimatedButton
+                label="VIEW ALL PRODUCTS"
+                onClick={() => {
+                  setSearchQuery("");
+                  handleSelect("All");
+                }}
+                variant="solid"
+                className="border-1 p-2"
+              />
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Results Count */}
+      <div className="mt-8 text-center text-sm text-neutral-500">
+        {loadingProducts
+          ? "Loading products..."
+          : `Showing ${filteredProducts.length} product${
+              filteredProducts.length !== 1 ? "s" : ""
+            }`}
       </div>
     </Container>
   );

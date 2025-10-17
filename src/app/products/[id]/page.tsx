@@ -1,6 +1,6 @@
 "use client";
 // Removed static product types - now using dynamic API data
-import Container from "@/components/ui/Container";
+import Container from "@/components/Container";
 import { useCart } from "@/components/cart/CartContext";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
@@ -157,171 +157,140 @@ export default function ProductDetail({
           }),
         }}
       />
-      <Container className="pt-10">
-        <nav className="text-sm text-neutral-600">
-          <Link href="/products" className="hover:underline cursor-pointer">
+      <Container className=" m-20 ">
+        {/* Breadcrumb with updated styling */}
+        <nav className="text-sm text-textcolor/70 uppercase tracking-wider pt-10 pl-20">
+          <Link
+            href="/products"
+            className="hover:text-textcolor transition-colors"
+          >
             Products
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-neutral-900">{name}</span>
+          <span className="text-textcolor">{name}</span>
         </nav>
 
-        <div className="mt-6 grid md:grid-cols-2 gap-10 items-start">
-          <div className="group rounded-2xl overflow-hidden bg-[#FAFAFA] border border-neutral-200 shadow-sm">
+        <div className="mx-20 my-10 grid md:grid-cols-2 gap-16 items-start border-2 border-textcolor/10 p-10 rounded-lg bg-[var(--productcard)]">
+          {/* Image container with improved styling */}
+          <div className="group rounded-lg overflow-hidden bg-[var(--productcard)] relative ">
             <Image
               src={image}
               alt={name}
-              width={600}
-              height={480}
-              className="w-full h-[360px] sm:h-[520px] object-cover transition-transform duration-500 ease-out group-hover:scale-[1.01]"
-              sizes="(max-width: 640px) 100vw, 50vw"
+              width={200}
+              height={280}
+              className="w-full h-[480px] sm:h-[500px] object-contain mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-700 ease-out group-hover:scale-105"
+              sizes="(max-width: 540px) 100vw, 50vw"
               priority
             />
           </div>
 
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              {name}
-            </h1>
-            <p className="mt-2 inline-flex items-center rounded-full bg-black text-white px-4 py-2 text-sm font-semibold">
-              ${price}
-            </p>
-            {product?.category && (
-              <p className="mt-1 text-xs text-neutral-600">
-                {product.category}
+          {/* Product details with updated styling */}
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-medium tracking-tight text-textcolor">
+                {name}
+              </h1>
+              <p className="mt-4 text-2xl sm:text-3xl font-semibold text-textcolor">
+                ${price}
               </p>
-            )}
-
-            <div className="mt-5 h-px bg-neutral-200" />
-
-            {(product?.description ||
-              product?.materials ||
-              product?.dimensions) && (
-              <div className="mt-6 space-y-6">
-                {product?.description && (
-                  <p className="text-sm text-neutral-700 max-w-prose whitespace-pre-line">
-                    {product.description}
-                  </p>
-                )}
-
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
-                    Product details
-                  </h3>
-                  <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                    {product?.dimensions && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-neutral-500 min-w-24">
-                          Dimensions
-                        </span>
-                        <span className="text-neutral-800">
-                          {product.dimensions}
-                        </span>
-                      </div>
-                    )}
-                    {product?.materials && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-neutral-500 min-w-24">
-                          Materials
-                        </span>
-                        <span className="text-neutral-800">
-                          {product.materials}
-                        </span>
-                      </div>
-                    )}
-                    {product?.weight && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-neutral-500 min-w-24">
-                          Weight
-                        </span>
-                        <span className="text-neutral-800">
-                          {product.weight}
-                        </span>
-                      </div>
-                    )}
-                    {product?.warranty && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-neutral-500 min-w-24">
-                          Warranty
-                        </span>
-                        <span className="text-neutral-800">
-                          {product.warranty}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {product?.features && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
-                      Key features
-                    </h3>
-                    <ul className="list-disc pl-5 text-sm text-neutral-800 space-y-1">
-                      {String(product.features)
-                        .split(/\r?\n/)
-                        .map((line: string, idx: number) => (
-                          <li key={idx}>{line}</li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
-
-                {product?.careInstructions && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
-                      Care instructions
-                    </h3>
-                    <p className="text-sm text-neutral-700 whitespace-pre-line">
-                      {product.careInstructions}
-                    </p>
-                  </div>
-                )}
-
-                {product?.specifications && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-semibold tracking-wide text-neutral-900">
-                      Specifications
-                    </h3>
-                    <p className="text-sm text-neutral-700 whitespace-pre-line">
-                      {product.specifications}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="mt-8 flex gap-3">
-              <button
-                className="inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 cursor-pointer"
-                onClick={() =>
-                  dispatch({ type: "ADD", payload: { id, name, price, image } })
-                }
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Add to Cart
-              </button>
-              <Link
-                href="/products"
-                className="rounded-full border px-5 py-2.5 text-sm font-semibold hover:bg-black hover:text-white hover:border-black cursor-pointer"
-              >
-                Continue Shopping
-              </Link>
+              {product?.category && (
+                <p className="mt-2 text-sm uppercase tracking-wider text-textcolor/70">
+                  {product.category}
+                </p>
+              )}
             </div>
-            <p className="mt-3 text-xs text-neutral-500">
-              Free shipping on orders over $250. 30-day returns.
-            </p>
+
+            <div className="h-px bg-textcolor/10" />
+
+            {/* Product details section */}
+            <div className="space-y-8">
+              {product?.description && (
+                <p className="text-base text-textcolor/80 leading-relaxed">
+                  {product.description}
+                </p>
+              )}
+
+              {/* Specifications grid */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-textcolor uppercase tracking-wide">
+                  Product Details
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {product?.dimensions && (
+                    <div className="space-y-2">
+                      <span className="text-sm uppercase tracking-wider text-textcolor/70">
+                        Dimensions
+                      </span>
+                      <p className="text-textcolor">{product.dimensions}</p>
+                    </div>
+                  )}
+                  {product?.materials && (
+                    <div className="space-y-2">
+                      <span className="text-sm uppercase tracking-wider text-textcolor/70">
+                        Materials
+                      </span>
+                      <p className="text-textcolor">{product.materials}</p>
+                    </div>
+                  )}
+                  {product?.weight && (
+                    <div className="space-y-2">
+                      <span className="text-sm uppercase tracking-wider text-textcolor/70">
+                        Weight
+                      </span>
+                      <p className="text-textcolor">{product.weight}</p>
+                    </div>
+                  )}
+                  {product?.warranty && (
+                    <div className="space-y-2">
+                      <span className="text-sm uppercase tracking-wider text-textcolor/70">
+                        Warranty
+                      </span>
+                      <p className="text-textcolor">{product.warranty}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-4">
+                <button
+                  className="flex-1 text-textcolor border-1 rounded-full border-amber-950 px-8 py-4 text-sm uppercase tracking-wider transition-all duration-300 hover:bg-textcolor/90"
+                  onClick={() =>
+                    dispatch({
+                      type: "ADD",
+                      payload: { id, name, price, image },
+                    })
+                  }
+                >
+                  <span className="flex items-center justify-center gap-2 ">
+                    <ShoppingCart className="h-4 w-4 t" />
+                    Add to Cart
+                  </span>
+                </button>
+                <Link
+                  href="/products"
+                  className="flex-1 border border-textcolor px-8 py-4 text-sm uppercase tracking-wider text-center transition-all duration-300 hover:bg-textcolor hover:text-background"
+                >
+                  Continue Shopping
+                </Link>
+              </div>
+
+              <p className="text-sm uppercase tracking-wider text-textcolor/70">
+                Free shipping on orders over $250 • 30-day returns
+              </p>
+            </div>
           </div>
         </div>
-        {/* Related products */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            You may also like
+
+        {/* Related products section */}
+        <div className="mt-32 m-20">
+          <h2 className="text-3xl sm:text-4xl font-medium text-textcolor mb-2">
+            You May Also Like
           </h2>
-          <p className="mt-1 text-sm text-neutral-600">
+          <p className="text-sm uppercase tracking-wider text-textcolor/70 mb-8">
             Products from the same category
           </p>
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {related.map((rp: Product) => (
               <ProductCard
                 key={rp._id || rp.id}

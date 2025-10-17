@@ -4,8 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/cart/CartContext";
 import { Heart, ShoppingCart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default function ProductCard({
   id,
@@ -24,40 +22,40 @@ export default function ProductCard({
 }) {
   const { dispatch } = useCart();
   return (
-    <Card className="group flex flex-col relative overflow-hidden h-full bg-[#FAFAFA] transition-all duration-300 hover:scale-105 hover:shadow-md">
-      <div className="relative w-full aspect-square">
-        <Link href={`/products/${id}`} className="cursor-pointer">
+    <div className="relative flex-shrink-0 bg-[var(--productcard)] group  overflow-hidden">
+      <Link href={`/products/${id}`}>
+        <div className="relative w-full aspect-square">
           <Image
             src={image}
             alt={name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+            className="w-full h-full object-cover mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-500 ease-out group-hover:scale-105 p-10"
             loading="lazy"
+            draggable={false}
           />
-        </Link>
-      </div>
-      <Button
+        </div>
+      </Link>
+
+      {/* Add to Cart Button */}
+      <button
         type="button"
         aria-label="Add to cart"
-        variant="outline"
-        size="icon"
         onClick={() =>
           dispatch({ type: "ADD", payload: { id, name, price, image } })
         }
-        className="absolute top-2 right-2"
+        className="absolute top-4 right-4 inline-flex items-center justify-center rounded-full bg-white/80 backdrop-blur p-2 text-sm transition-all duration-300 hover:scale-110"
       >
         <ShoppingCart className="h-4 w-4" />
-      </Button>
-      <CardContent className="p-4 flex justify-between items-center ">
-        <Link href={`/products/${id}`} className="cursor-pointer">
-          <h3 className="text-base font-bold tracking-tight text-neutral-900">
-            {name}
-          </h3>
-        </Link>
+      </button>
 
-        <p className="text-base text-neutral-900">${price}</p>
-      </CardContent>
-    </Card>
+      {/* Product Details */}
+      <div className="p-5 text-textcolor">
+        <Link href={`/products/${id}`}>
+          <h3 className="text-xl font-medium">{name}</h3>
+          <p className="text-3xl font-semibold mt-2">${price}</p>
+        </Link>
+      </div>
+    </div>
   );
 }

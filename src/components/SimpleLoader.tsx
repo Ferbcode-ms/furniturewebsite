@@ -4,29 +4,40 @@ const SimpleLoader: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4">
       <div className="text-center">
-        {/* Smooth spinner ring */}
+        {/* Premium 4-dot bounce loader */}
         <div
-          className="relative mx-auto mb-3 h-8 w-8"
-          role="status"
-          aria-label="Loading"
-        >
-          <div className="absolute inset-0 rounded-full border-2 border-black/80 border-t-transparent animate-spin" />
-          <div className="absolute inset-1 rounded-full border-2 border-black/20 border-b-transparent animate-spin [animation-duration:1.4s]" />
-        </div>
-
-        {/* Bouncing dots */}
-        <div
-          className="flex items-center justify-center gap-1.5 mb-4"
+          className="flex items-center justify-center gap-2 mb-6"
           aria-hidden
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-neutral-700 animate-bounce [animation-delay:-0.2s]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-neutral-500 animate-bounce [animation-delay:-0.1s]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-neutral-400 animate-bounce" />
+          <span
+            className="h-5 w-5 rounded-full bg-[var(--textcolor)] animate-[bounce_0.9s_infinite] [animation-delay:-0.3s]"
+            style={{
+              animationTimingFunction: "cubic-bezier(0.17, 0.67, 0.83, 0.67)",
+            }}
+          />
+          <span
+            className="h-5 w-5 rounded-full bg-[var(--textcolor)] animate-[bounce_0.9s_infinite] [animation-delay:-0.2s]"
+            style={{
+              animationTimingFunction: "cubic-bezier(0.17, 0.67, 0.83, 0.67)",
+            }}
+          />
+          <span
+            className="h-5 w-5 rounded-full bg-[var(--textcolor)] animate-[bounce_0.9s_infinite] [animation-delay:-0.1s]"
+            style={{
+              animationTimingFunction: "cubic-bezier(0.17, 0.67, 0.83, 0.67)",
+            }}
+          />
+          <span
+            className="h-5 w-5 rounded-full bg-[var(--textcolor)] animate-[bounce_0.9s_infinite] [animation-delay:-0.0s]"
+            style={{
+              animationTimingFunction: "cubic-bezier(0.17, 0.67, 0.83, 0.67)",
+            }}
+          />
         </div>
 
-        {/* Subtle label */}
-        <p className="text-xs text-neutral-600 tracking-wide">
-          Preparing your experience…
+        {/* Loading text */}
+        <p className="text-sm font-medium text-[var(--textcolor)] tracking-wider uppercase">
+          Loading
         </p>
       </div>
     </div>

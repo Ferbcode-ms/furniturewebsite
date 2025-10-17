@@ -7,7 +7,7 @@ export default function Container({
 }: Props) {
   return (
     <div
-      className={`mx-auto max-w-6xl px-4 w-full overflow-x-hidden ${className}`}
+      className={`mx-auto max-w-full w-full overflow-x-hidden ${className}`}
       {...rest}
     >
       {children}

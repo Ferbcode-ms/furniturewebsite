@@ -1,32 +1,11 @@
 "use client";
 import useSWR from "swr";
-import Container from "@/components/ui/Container";
-import Skeleton from "@/components/ui/Skeleton";
+import Container from "@/components/Container";
+import Skeleton from "@/components/Skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Product, Category } from "@/types";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// removed ui imports
 import { MoreHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -219,8 +198,8 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <Container className="pt-10">
-      <h1 className="text-3xl font-extrabold tracking-tight">Products</h1>
+    <Container className="my-25">
+      <h1 className="text-3xl font-extrabold tracking-tight ml-10">Products</h1>
       {!data && (
         <div className="mt-6 space-y-3">
           <Skeleton className="h-10 w-full" />
@@ -232,9 +211,9 @@ export default function AdminProductsPage() {
       )}
       <form
         onSubmit={createProduct}
-        className="mt-6 grid lg:grid-cols-3 gap-4 items-start"
+        className="m-10 grid lg:grid-cols-3 gap-4 items-start"
       >
-        <div className="space-y-3 lg:col-span-2 rounded-xl border p-4 bg-[#FAFAFA]">
+        <div className="space-y-3 lg:col-span-2  rounded-xl border p-4 bg-[#FAFAFA]">
           <div className="grid sm:grid-cols-2 gap-3">
             <input
               value={form.name}
@@ -265,39 +244,31 @@ export default function AdminProductsPage() {
             />
             <div className="grid sm:grid-cols-2 gap-3 sm:col-span-2">
               <div className="space-y-2">
-                <Select
+                <select
                   value={selectedMainCategory}
-                  onValueChange={(v) => handleMainCategoryChange(v)}
+                  onChange={(e) => handleMainCategoryChange(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2"
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Main Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Select Main Category</SelectItem>
-                    {mainCategories.map((c: Category) => (
-                      <SelectItem key={c._id} value={c.name}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="">Select Main Category</option>
+                  {mainCategories.map((c: Category) => (
+                    <option key={c._id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
                 {selectedMainCategory && (
-                  <Select
+                  <select
                     value={form.category}
-                    onValueChange={(v) => handleSubCategoryChange(v)}
+                    onChange={(e) => handleSubCategoryChange(e.target.value)}
+                    className="w-full rounded-lg border px-3 py-2"
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Sub-Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Select Sub-Category</SelectItem>
-                      {subCategories.map((c: Category) => (
-                        <SelectItem key={c._id} value={c.name}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <option value="">Select Sub-Category</option>
+                    {subCategories.map((c: Category) => (
+                      <option key={c._id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 )}
               </div>
               <div className="flex gap-2">
@@ -307,13 +278,13 @@ export default function AdminProductsPage() {
                   placeholder="New category"
                   className="flex-1 rounded-lg border px-3 py-2"
                 />
-                <Button
+                <button
                   onClick={addCategoryInline}
                   type="button"
-                  variant="outline"
+                  className="rounded-lg border px-4 py-2 text-sm"
                 >
                   Add
-                </Button>
+                </button>
               </div>
             </div>
             <div className="sm:col-span-2 flex items-center gap-4">
@@ -425,18 +396,20 @@ export default function AdminProductsPage() {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-3">
-            <Button type="submit" className="px-5 py-2 text-sm">
+            <button
+              type="submit"
+              className="px-5 py-2 text-sm rounded-lg bg-black text-white"
+            >
               {editingId ? "Save Changes" : "Add"}
-            </Button>
+            </button>
             {editingId && (
-              <Button
+              <button
                 type="button"
-                variant="outline"
                 onClick={cancelEdit}
-                className="px-5 py-2 text-sm"
+                className="px-5 py-2 text-sm rounded-lg border"
               >
                 Cancel
-              </Button>
+              </button>
             )}
           </div>
         </div>
@@ -469,53 +442,52 @@ export default function AdminProductsPage() {
         </div>
       </form>
 
-      <div className="mt-6 overflow-x-auto">
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow className="text-left border-b">
-              <TableHead className="py-2 pr-4">Name</TableHead>
-              <TableHead className="py-2 pr-4">Price</TableHead>
-              <TableHead className="py-2 pr-4">Category</TableHead>
-              <TableHead className="py-2 pr-4">Materials</TableHead>
-              <TableHead className="py-2 pr-4">Tags</TableHead>
-              <TableHead className="py-2 pr-4">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="m-10 ">
+        <table className="min-w-full text-sm w-full">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="py-2 pr-4">Name</th>
+              <th className="py-2 pr-4">Price</th>
+              <th className="py-2 pr-4">Category</th>
+              <th className="py-2 pr-4">Materials</th>
+              <th className="py-2 pr-4">Tags</th>
+              <th className="py-2 pr-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {data?.products?.map((p: Product) => (
-              <TableRow key={p._id} className="border-b last:border-0">
-                <TableCell className="py-2 pr-4">{p.name}</TableCell>
-                <TableCell className="py-2 pr-4">
+              <tr key={p._id} className="border-b last:border-0">
+                <td className="py-2 pr-4">{p.name}</td>
+                <td className="py-2 pr-4">
                   ${p.price?.toFixed?.(2) ?? p.price}
-                </TableCell>
-                <TableCell className="py-2 pr-4">{p.category || "-"}</TableCell>
-                <TableCell className="py-2 pr-4 max-w-xs truncate">
+                </td>
+                <td className="py-2 pr-4">{p.category || "-"}</td>
+                <td className="py-2 pr-4 max-w-xs truncate">
                   {p.materials || "-"}
-                </TableCell>
-                <TableCell className="py-2 pr-4">
+                </td>
+                <td className="py-2 pr-4">
                   {Array.isArray(p.tags) ? p.tags.join(", ") : "-"}
-                </TableCell>
-                <TableCell className="py-2 pr-4">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => edit(p)}>
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => remove(p._id)}>
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="py-2 pr-4">
+                  <div className="inline-flex gap-2">
+                    <button
+                      className="rounded-lg border px-3 py-1 text-sm"
+                      onClick={() => edit(p)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="rounded-lg border px-3 py-1 text-sm"
+                      onClick={() => remove(p._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </Container>
   );
