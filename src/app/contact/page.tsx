@@ -43,14 +43,14 @@ export default function OrderPage() {
   }
 
   return (
-    <Container className="py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+    <Container className="py-6 m-10 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
+      <h1 className="text-2xl ml-3 sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
         Checkout
       </h1>
 
       {null}
 
-      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="mx-3 grid lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Summary */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <div className="rounded-xl border bg-[#FAFAFA] p-4 sm:p-6">

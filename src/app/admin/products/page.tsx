@@ -195,8 +195,10 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <Container className="my-25">
-      <h1 className="text-3xl font-extrabold tracking-tight ml-10">Products</h1>
+    <Container className="sm:my-25 my-15">
+      <h1 className="text-3xl font-extrabold tracking-tight sm:ml-10 ml-5">
+        Products
+      </h1>
       {!data && (
         <div className="mt-6 space-y-3">
           <Skeleton className="h-10 w-full" />
@@ -208,7 +210,7 @@ export default function AdminProductsPage() {
       )}
       <form
         onSubmit={createProduct}
-        className="m-10 grid lg:grid-cols-3 gap-4 items-start"
+        className="sm:m-10 m-5 grid lg:grid-cols-3 gap-4 items-start"
       >
         <div className="space-y-3 lg:col-span-2  rounded-xl border p-4 bg-[#FAFAFA]">
           <div className="grid sm:grid-cols-2 gap-3">
@@ -439,8 +441,8 @@ export default function AdminProductsPage() {
         </div>
       </form>
 
-      <div className="m-10 ">
-        <table className="min-w-full text-sm w-full">
+      <div className="sm:m-10 m-5 overflow-auto">
+        <table className="min-w-full text-sm w-full overflow-auto">
           <thead>
             <tr className="text-left border-b">
               <th className="py-2 pr-4">Name</th>

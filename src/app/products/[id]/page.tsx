@@ -157,9 +157,9 @@ export default function ProductDetail({
           }),
         }}
       />
-      <Container className=" m-20 ">
+      <Container className=" sm:m-20 m-5 ">
         {/* Breadcrumb with updated styling */}
-        <nav className="text-sm text-textcolor/70 uppercase tracking-wider pt-10 pl-20">
+        <nav className="text-sm text-textcolor/70 uppercase tracking-wider pt-10 pl-5 sm:pl-20">
           <Link
             href="/products"
             className="hover:text-textcolor transition-colors"
@@ -170,7 +170,7 @@ export default function ProductDetail({
           <span className="text-textcolor">{name}</span>
         </nav>
 
-        <div className="mx-20 my-10 grid md:grid-cols-2 gap-16 items-start border-2 border-textcolor/10 p-10 rounded-lg bg-[var(--productcard)]">
+        <div className="sm:mx-20 sm:my-10 my-5 grid md:grid-cols-2  gap-6 sm:gap-16 items-start border-2 border-textcolor/10 p-10 rounded-lg bg-[var(--productcard)]">
           {/* Image container with improved styling */}
           <div className="group rounded-lg overflow-hidden bg-[var(--productcard)] relative ">
             <Image
@@ -252,9 +252,9 @@ export default function ProductDetail({
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-4">
+              <div className="flex gap-1 sm:gap-4">
                 <button
-                  className="flex-1 text-textcolor border-1 rounded-full border-amber-950 px-8 py-4 text-sm uppercase tracking-wider transition-all duration-300 hover:bg-textcolor/90"
+                  className=" text-textcolor border-1 rounded-full border-amber-950 px-3 sm:px-8 sm:py-4 text-[12px] sm:text-sm uppercase tracking-wider transition-all duration-300 hover:bg-textcolor/90"
                   onClick={() =>
                     dispatch({
                       type: "ADD",
@@ -263,13 +263,13 @@ export default function ProductDetail({
                   }
                 >
                   <span className="flex items-center justify-center gap-2 ">
-                    <ShoppingCart className="h-4 w-4 t" />
+                    <ShoppingCart className="h-4 w-4 " />
                     Add to Cart
                   </span>
                 </button>
                 <Link
                   href="/products"
-                  className="flex-1 border border-textcolor px-8 py-4 text-sm uppercase tracking-wider text-center transition-all duration-300 hover:bg-textcolor hover:text-background"
+                  className="flex-1 border border-textcolor  sm:px-8 py-2 sm:py-4 text-[12px] sm:text-sm uppercase tracking-wider text-center transition-all duration-300 hover:bg-textcolor hover:text-background"
                 >
                   Continue Shopping
                 </Link>
@@ -283,14 +283,14 @@ export default function ProductDetail({
         </div>
 
         {/* Related products section */}
-        <div className="mt-32 m-20">
+        <div className="sm:mt-32 sm:m-20 m-8">
           <h2 className="text-3xl sm:text-4xl font-medium text-textcolor mb-2">
             You May Also Like
           </h2>
           <p className="text-sm uppercase tracking-wider text-textcolor/70 mb-8">
             Products from the same category
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {related.map((rp: Product) => (
               <ProductCard
                 key={rp._id || rp.id}

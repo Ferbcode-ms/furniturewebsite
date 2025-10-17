@@ -97,7 +97,7 @@ export default function Navbar() {
             <ShoppingCart className="h-5 w-5 font-semibold" />
             <span className="hidden sm:inline ml-2 font-semibold">CART</span>
             {state.items.length > 0 && (
-              <span className="absolute -top-2 -right-6 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white font-bold">
+              <span className="absolute -top-1 sm:-top-2 sm:-right-6 -right-3 inline-flex sm:h-5 h-3 sm:w-5 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] sm:text-xs text-white font-bold">
                 {state.items.length}
               </span>
             )}
@@ -134,7 +134,7 @@ export default function Navbar() {
           openMobile ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <nav className="flex flex-col items-center justify-center h-full gap-8 text-3xl font-semibold">
+        <nav className="flex flex-col items-start mx-auto justify-center h-full gap-8 text-3xl font-semibold">
           {navLinks.map((l) => (
             <Link
               key={l.href}
@@ -290,7 +290,7 @@ export default function Navbar() {
                     className="rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 hover:bg-gray-50"
                   />
                   <button
-                    className="flex-1 rounded-lg bg-black text-white px-4 py-2.5 text-sm font-medium hover:bg-gray-800 transition-colors"
+                    className="flex-1 rounded-lg bg-black text-white sm:px-4 py-2.5 text-sm font-medium hover:bg-gray-800 transition-colors"
                     onClick={() => {
                       router.push("/order");
                       dispatch({ type: "TOGGLE" });

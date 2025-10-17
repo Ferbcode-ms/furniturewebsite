@@ -79,8 +79,8 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <Container className="m-30">
-      <h1 className="text-3xl font-extrabold tracking-tight ml-20">
+    <Container className="sm:m-30 m-15">
+      <h1 className="text-3xl font-extrabold tracking-tight sm:ml-20 ml-5">
         Categories
       </h1>
       {!data && (
@@ -94,7 +94,7 @@ export default function AdminCategoriesPage() {
       )}
       <form
         onSubmit={createCategory}
-        className="mx-20 my-10 grid sm:grid-cols-4 gap-3 max-w-3xl"
+        className="sm:mx-20 mx-5 my-10 grid sm:grid-cols-4 gap-3 max-w-3xl"
       >
         <input
           value={name}
@@ -143,7 +143,7 @@ export default function AdminCategoriesPage() {
         {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
       </form>
 
-      <div className="mx-20 overflow-x-auto">
+      <div className="sm:mx-20 mx-5 overflow-x-auto">
         <table className="min-w-full text-sm w-full">
           <thead>
             <tr className="text-left border-b">

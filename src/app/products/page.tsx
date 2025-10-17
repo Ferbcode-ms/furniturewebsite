@@ -149,17 +149,17 @@ export default function ProductsPage() {
   }
 
   return (
-    <Container className="py-6 lg:py-10 p-20 mt-10">
+    <Container className="py-6 lg:py-10 sm:p-20 p-5 mt-10">
       {/* Enhanced Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-12"
+        className="sm:mb-12 mb-6"
       >
         <h1 className=" tracking-wide leading-[1.2]  text-[40px] sm:text-[56px] md:text-[64px] lg:text-[80px]">
           {selected === "All" ? "COLLECTION" : selected.toUpperCase()}
         </h1>
-        <p className="mt-4 text-neutral-600 text-sm sm:text-base max-w-2xl">
+        <p className="mt-4 text-neutral-600 text-[12px] sm:text-base max-w-2xl">
           {selected === "All"
             ? "Discover our carefully curated collection of premium furniture pieces."
             : `Explore our ${selected.toLowerCase()} collection, designed for modern living.`}
@@ -167,7 +167,7 @@ export default function ProductsPage() {
       </motion.div>
 
       {/* Search and Filters Bar */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400 h-5 w-5" />
           <input
@@ -179,23 +179,35 @@ export default function ProductsPage() {
           />
         </div>
 
-        <div className="flex gap-3">
+        <div className="relative min-w-[200px]">
           <select
             value={sortBy}
             onChange={(e) =>
               handleSortChange(e.target.value as "name" | "price" | "newest")
             }
-            className="px-6 py-3 border-1 border-[var(--textcolor)] rounded-4xl focus:outline-none "
+            className="w-full px-6 py-3 border-1 border-[var(--textcolor)] rounded-4xl focus:outline-none bg-background appearance-none cursor-pointer"
           >
-            <option
-              value="newest"
-              className="bg-[var(--background)] rounded-4xl p-2 hover:bg-[var(--textcolor)]"
-            >
-              NEWEST FIRST
-            </option>
+            <option value="newest">NEWEST FIRST</option>
             <option value="price">PRICE: LOW TO HIGH</option>
             <option value="name">NAME: A TO Z</option>
           </select>
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.5 4.5L6 8L9.5 4.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -204,7 +216,7 @@ export default function ProductsPage() {
         <div className="flex gap-3 pb-2">
           <button
             onClick={() => handleSelect("All")}
-            className={`px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors border-1 border-[var(--textcolor)] cursor-pointer ${
+            className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors border-1 border-[var(--textcolor)] cursor-pointer ${
               selected === "All"
                 ? "bg-[var(--textcolor)] text-background"
                 : "bg-background "
@@ -216,7 +228,7 @@ export default function ProductsPage() {
             <button
               key={cat.name}
               onClick={() => handleSelect(cat.name)}
-              className={`px-6 py-2 rounded-full text-sm whitespace-nowrap transition-colors  border-1 border-[var(--textcolor)] cursor-pointer ${
+              className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors  border-1 border-[var(--textcolor)] cursor-pointer ${
                 selected === cat.name
                   ? "bg-[var(--textcolor)] text-background"
                   : "bg-background"
@@ -236,7 +248,7 @@ export default function ProductsPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
         >
           {filteredProducts.map((p: Product, i) => (
             <motion.div

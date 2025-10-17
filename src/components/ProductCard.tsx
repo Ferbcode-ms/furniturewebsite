@@ -28,7 +28,7 @@ export default function ProductCard({
             alt={name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-            className="w-full h-full object-cover mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-500 ease-out group-hover:scale-105 p-10"
+            className="w-full h-full object-cover mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-500 ease-out group-hover:scale-105 sm:p-10 p-8"
             loading="lazy"
             draggable={false}
           />
@@ -42,16 +42,16 @@ export default function ProductCard({
         onClick={() =>
           dispatch({ type: "ADD", payload: { id, name, price, image } })
         }
-        className="absolute top-4 right-4 inline-flex items-center justify-center rounded-full bg-white/80 backdrop-blur p-2 text-sm transition-all duration-300 hover:scale-110"
+        className="absolute top-2 sm:top-4 right-2 sm:right-4 inline-flex items-center justify-center rounded-full bg-white/80 backdrop-blur p-2 text-sm transition-all duration-300 hover:scale-110"
       >
         <ShoppingCart className="h-4 w-4" />
       </button>
 
       {/* Product Details */}
-      <div className="p-5 text-textcolor">
+      <div className="p-5 pt-0 sm:pt-5   text-textcolor">
         <Link href={`/products/${id}`}>
-          <h3 className="text-xl font-medium">{name}</h3>
-          <p className="text-3xl font-semibold mt-2">${price}</p>
+          <h3 className="sm:text-xl text-[20px] font-medium">{name}</h3>
+          <p className="sm:text-3xl font-semibold sn:mt-2 mt-1">${price}</p>
         </Link>
       </div>
     </div>

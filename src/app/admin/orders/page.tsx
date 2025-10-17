@@ -252,8 +252,8 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <Container className="m-20 sm:pt-8 lg:pt-10">
-      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight ml-20">
+    <Container className="sm:m-20 m-15 sm:pt-8 lg:pt-10">
+      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight sm:ml-20 ml-5">
         Orders
       </h1>
       {isLoading && (
@@ -271,7 +271,7 @@ export default function AdminOrdersPage() {
         <p className="mt-4 text-sm text-red-600">Failed to load orders</p>
       )}
       {data && (
-        <div className="m-20 sm:mt-6 flex flex-col lg:flex-row gap-4 sm:gap-6 ">
+        <div className="sm:m-20 m-5 sm:mt-6 flex flex-col lg:flex-row gap-4 sm:gap-6 ">
           {/* Left: Orders table */}
           <div className="flex flex-col">
             {/* Filters */}
@@ -323,7 +323,7 @@ export default function AdminOrdersPage() {
               <table className="min-w-full text-sm w-full">
                 <thead>
                   <tr className="text-left border-b">
-                    <th className="py-2 pr-2 sm:pr-4">Order ID</th>
+                    <th className="py-2 pr-0 sm:pr-4">Order ID</th>
                     <th className="py-2 pr-2 sm:pr-4 hidden sm:table-cell">
                       Customer
                     </th>
