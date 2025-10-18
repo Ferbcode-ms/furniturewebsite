@@ -59,8 +59,6 @@ const Hero = () => {
         trigger: bottomSectionRef.current,
         start: "top 85%", // trigger a bit later
         end: "bottom 85%", // extend scroll range (longer = slower)
-        scrub: 2, // smooth scrub
-        // markers: true, // remove later
       },
     });
 
@@ -86,12 +84,11 @@ const Hero = () => {
     tl2.from(
       productCardRef.current,
       {
-        opacity: 0,
         scale: 0.9,
-        duration: 0.6,
+        duration: 0.2,
         ease: "power2.out",
       },
-      "-=0.7"
+      "+=0.3"
     );
 
     // Step 4: Reveal the "Product of the day" text

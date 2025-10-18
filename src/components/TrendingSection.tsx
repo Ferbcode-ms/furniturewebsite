@@ -2,6 +2,7 @@
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
+import Link from "next/link";
 import { Draggable } from "gsap/Draggable";
 import Container from "@/components/Container";
 import { Product } from "@/types";
@@ -76,14 +77,17 @@ const TrendingSection = ({ products }: TrendingSectionProps) => {
               key={i}
               className="relative flex-shrink-0 bg-[var(--productcard)] group"
             >
-              <div className="relative w-[290px] sm:w-[300px] md:w-[350px]">
+              <Link
+                href={`/products/${item._id || item.id}`}
+                className="block relative w-[290px] sm:w-[300px] md:w-[350px] group/card"
+              >
                 <Image
                   src={item.image}
                   alt={item.name}
                   width={350}
                   height={262}
                   draggable={false}
-                  className="w-full p-5 my-5 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105"
+                  className="w-full p-5 my-5 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-300 group-hover/card:scale-105"
                 />
                 <div className="p-3 sm:p-4 md:p-5 text-textcolor">
                   <p className="text-base sm:text-lg md:text-xl font-medium truncate">
@@ -92,8 +96,9 @@ const TrendingSection = ({ products }: TrendingSectionProps) => {
                   <p className="text-xl sm:text-2xl md:text-3xl font-semibold mt-1 sm:mt-2">
                     ${item.price}
                   </p>
+                  <div className="absolute inset-0 duration-300 rounded-lg pointer-events-none" />
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

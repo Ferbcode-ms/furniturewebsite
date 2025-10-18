@@ -29,22 +29,19 @@ export default function Home() {
   const bgSectionRef = useRef<HTMLDivElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const categoryTrackRef = useRef<HTMLDivElement>(null);
-
   const isMobile = useRef<boolean>(false);
 
-  // Check for mobile on mount and resize
+  // ✅ Detect Mobile
   useEffect(() => {
     const checkMobile = () => {
       isMobile.current = window.innerWidth < 768;
     };
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
-
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // ✅ Fetch data
+  // ✅ Fetch Data
   useEffect(() => {
     (async () => {
       try {
@@ -56,24 +53,26 @@ export default function Home() {
         setTrending(tr.products || []);
         setArrivals(ar.products || []);
         setCategories(cs.hierarchical || []);
-      } catch {
-        console.error("Failed to load data");
+      } catch (err) {
+        console.error("Failed to load data", err);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  // Modified GSAP effect for categories
+  // ✅ GSAP Scroll Animation (Fixed)
   useEffect(() => {
-    if (isMobile.current) return; // Skip GSAP for mobile
+    if (isMobile.current) return;
     if (!categoryRef.current || !categoryTrackRef.current) return;
 
     const section = categoryRef.current;
     const track = categoryTrackRef.current;
 
-    const initScroll = () => {
-      const totalScroll = track.scrollWidth - section.offsetWidth; // correct distance
+    // GSAP Context ensures React-safe cleanup
+    const ctx = gsap.context(() => {
+      const totalScroll = track.scrollWidth - section.offsetWidth;
+      if (totalScroll <= 0) return;
 
       gsap.to(track, {
         x: -totalScroll,
@@ -87,16 +86,14 @@ export default function Home() {
           anticipatePin: 1,
         },
       });
-    };
+    }, section);
 
-    const timeout = setTimeout(initScroll, 100); // wait for DOM render
+    // Cleanup properly to avoid "removeChild" errors
     return () => {
-      clearTimeout(timeout);
+      ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, [categories]);
-
-  // ✅ Background Parallax
 
   const images = [
     "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
@@ -107,10 +104,10 @@ export default function Home() {
 
   if (loading) return <SimpleLoader />;
 
-  // Modified Categories JSX
+  // ✅ Categories Section
   const CategoriesSection = () => {
     if (isMobile.current) {
-      // Mobile view without refs and GSAP
+      // Mobile layout
       return (
         <div className="overflow-x-auto pb-6 hide-scrollbar">
           <div className="flex flex-col sm:flex-row gap-6 px-6">
@@ -143,10 +140,16 @@ export default function Home() {
                         </p>
                       )}
                     </Link>
-                    <AnimatedButton
-                      className="mt-4 border p-2 px-3 text-textcolor text-sm uppercase"
-                      label={`${category.name} Products`}
-                    />
+                    <Link
+                      href={`/products?category=${encodeURIComponent(
+                        category.name
+                      )}`}
+                    >
+                      <AnimatedButton
+                        className="mt-4 border p-2 px-3 text-textcolor text-sm uppercase hover:bg-[var(--textcolor)] hover:text-background transition-colors"
+                        label={`${category.name} Products`}
+                      />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -156,7 +159,7 @@ export default function Home() {
       );
     }
 
-    // Desktop view with GSAP
+    // Desktop with ScrollTrigger
     return (
       <section ref={categoryRef} className="relative overflow-hidden">
         <div
@@ -171,7 +174,7 @@ export default function Home() {
             >
               <div className="flex flex-col sm:flex-row items-center gap-10">
                 <Image
-                  src={images[index % images.length]} //
+                  src={images[index % images.length]}
                   alt={category.name}
                   width={280}
                   height={320}
@@ -193,10 +196,16 @@ export default function Home() {
                       </p>
                     )}
                   </Link>
-                  <AnimatedButton
-                    className="mt-4 border p-2 px-3 text-textcolor text-sm uppercase"
-                    label={`${category.name} Products`}
-                  />
+                  <Link
+                    href={`/products?category=${encodeURIComponent(
+                      category.name
+                    )}`}
+                  >
+                    <AnimatedButton
+                      className="mt-4 border p-2 px-3 text-textcolor text-sm uppercase hover:bg-[var(--textcolor)] hover:text-background transition-colors"
+                      label={`${category.name} Products`}
+                    />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -206,6 +215,7 @@ export default function Home() {
     );
   };
 
+  // ✅ Page Layout
   return (
     <div className="space-y-24 overflow-x-hidden">
       <Hero />
@@ -217,13 +227,12 @@ export default function Home() {
         <CategoriesSection />
       </Container>
 
-      {/* ✅ Parallax Background Fixed */}
+      {/* Parallax Background */}
       <Container>
         <div
           ref={bgSectionRef}
           className="relative flex items-center justify-center min-h-[60vh] overflow-hidden"
         >
-          {/* ✅ Moving image for parallax */}
           <Image
             src="https://plus.unsplash.com/premium_photo-1683120656283-64c0815111f2?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1170"
             alt="Background"
@@ -231,11 +240,7 @@ export default function Home() {
             height={780}
             className="absolute inset-0 w-full h-full object-cover"
           />
-
-          {/* Overlay */}
           <div className="absolute inset-0 h-full w-full bg-black/30"></div>
-
-          {/* Content */}
           <div className="text-sm sm:text-lg font-medium bg-background px-15 sm:px-25 py-10 sm:py-15 sm:m-50 m-25 w-150 capitalize text-center z-10">
             Since <br />
             <p className="text-7xl sm:text-9xl m-5">1958</p> <br />
@@ -243,10 +248,12 @@ export default function Home() {
               We create furniture masterpieces that tell stories and store
               memories that don’t fade with trends.
             </p>
-            <AnimatedButton
-              className="mt-10 border-2 p-1 px-2 sm:px-3 border-var(--textcolor) text-textcolor uppercase text-[12px] sm:text-sm"
-              label="explore collection"
-            />
+            <Link href="/products">
+              <AnimatedButton
+                className="mt-10 border-2 p-1 px-2 sm:px-3 border-var(--textcolor) text-textcolor uppercase text-[12px] sm:text-sm hover:bg-[var(--textcolor)] hover:text-background transition-colors"
+                label="explore collection"
+              />
+            </Link>
           </div>
         </div>
       </Container>

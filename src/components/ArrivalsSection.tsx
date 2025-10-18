@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import Container from "@/components/Container";
 import Image from "next/image";
+import Link from "next/link";
 import { Product } from "@/types";
 import AnimatedButton from "@/components/AnimatedButton";
 
@@ -77,14 +78,17 @@ const ArrivalsSection = ({ products }: ArrivalsSectionProps) => {
               key={i}
               className="relative flex-shrink-0 bg-[var(--productcard)] group hover:scale-[1.02] transition-transform duration-300"
             >
-              <div className="relative w-[290px] sm:w-[300px] md:w-[350px]">
+              <Link
+                href={`/products/${item._id || item.id}`}
+                className="block relative w-[290px] sm:w-[300px] md:w-[350px] group/card"
+              >
                 <Image
                   src={item.image}
                   alt={item.name}
                   width={350}
                   height={262}
                   draggable={false}
-                  className="w-full p-5 my-10 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105"
+                  className="w-full p-5 my-10 aspect-[4/3] object-contain mix-blend-multiply filter contrast-110 brightness-105 transition-transform duration-300 group-hover/card:scale-105"
                 />
                 <div className="p-3 sm:p-4 md:p-5 text-textcolor">
                   <p className="text-base sm:text-lg md:text-xl font-medium truncate">
@@ -93,18 +97,21 @@ const ArrivalsSection = ({ products }: ArrivalsSectionProps) => {
                   <p className="text-xl sm:text-2xl md:text-3xl font-semibold mt-1 sm:mt-2">
                     ${item.price}
                   </p>
+                  <div className="absolute inset-0  transition-opacity duration-300 rounded-lg pointer-events-none" />
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
       </div>
 
       <div className="flex justify-center">
-        <AnimatedButton
-          className="mt-10 sm:mt-20 border-2 p-2 px-3 border-var(--textcolor) text-textcolor uppercase"
-          label="explore collection"
-        />
+        <Link href="/products">
+          <AnimatedButton
+            className="mt-12 border-2 p-1 px-2 sm:px-3 border-var(--textcolor) text-textcolor uppercase text-[12px] sm:text-sm mb-10   "
+            label="explore collection"
+          />
+        </Link>
       </div>
     </Container>
   );

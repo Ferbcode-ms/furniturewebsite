@@ -34,7 +34,6 @@ export default function AboutPage() {
         trigger: headingRef.current,
         start: "top 80%",
         end: "top 20%",
-        toggleActions: "play none none reverse",
       },
     });
 
@@ -64,7 +63,7 @@ export default function AboutPage() {
         trigger: imgWrapperRef.current,
         start: "top bottom",
         end: "bottom top",
-        scrub: 1.5, // smooth motion
+        scrub: 1, // smooth motion
         // markers: true, // enable to debug
       },
     });
