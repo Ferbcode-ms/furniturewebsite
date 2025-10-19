@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Container from "@/components/Container";
 import Hero from "@/components/layout/Hero";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import SimpleLoader from "@/components/SimpleLoader";
 import { Product } from "@/types";
 import AboutPage from "@/components/layout/About";
@@ -32,7 +32,7 @@ export default function Home() {
   const isMobile = useRef<boolean>(false);
 
   // ✅ Detect Mobile
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkMobile = () => {
       isMobile.current = window.innerWidth < 768;
     };
@@ -62,7 +62,7 @@ export default function Home() {
   }, []);
 
   // ✅ GSAP Scroll Animation (Fixed)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isMobile.current) return;
     if (!categoryRef.current || !categoryTrackRef.current) return;
 
@@ -72,6 +72,7 @@ export default function Home() {
     // GSAP Context ensures React-safe cleanup
     const ctx = gsap.context(() => {
       const totalScroll = track.scrollWidth - section.offsetWidth;
+
       if (totalScroll <= 0) return;
 
       gsap.to(track, {
@@ -80,10 +81,15 @@ export default function Home() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${totalScroll}`,
-          scrub: true,
+          end: "bottom top",
+          scrub: 1,
           pin: true,
           anticipatePin: 1,
+          markers: true,
+          onEnter: () => console.log("🎬 Horizontal scroll started!"),
+          onUpdate: (self) =>
+            console.log("📈 Progress:", self.progress.toFixed(2)),
+          onLeave: () => console.log("🏁 Horizontal scroll completed!"),
         },
       });
     }, section);
@@ -91,7 +97,6 @@ export default function Home() {
     // Cleanup properly to avoid "removeChild" errors
     return () => {
       ctx.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, [categories]);
 
@@ -161,11 +166,11 @@ export default function Home() {
 
     // Desktop with ScrollTrigger
     return (
-      <section ref={categoryRef} className="relative overflow-hidden">
+      <section ref={categoryRef} className="relative overflow-hidden h-screen">
         <div
           ref={categoryTrackRef}
           className="categories-track flex gap-10 px-10 will-change-transform"
-          style={{ width: `${categories.length * 80}vw` }}
+          style={{ width: `${categories.length * 100}vw` }}
         >
           {categories.slice(0, 4).map((category, index) => (
             <div
@@ -250,7 +255,7 @@ export default function Home() {
             </p>
             <Link href="/products">
               <AnimatedButton
-                className="mt-10 border-2 p-1 px-2 sm:px-3 border-var(--textcolor) text-textcolor uppercase text-[12px] sm:text-sm hover:bg-[var(--textcolor)] hover:text-background transition-colors"
+                className="mt-10 border-2 p-1 px-2 sm:px-3 border-[var(--textcolor)] text-textcolor uppercase text-[12px] sm:text-sm hover:bg-[var(--textcolor)] hover:text-background transition-colors"
                 label="explore collection"
               />
             </Link>

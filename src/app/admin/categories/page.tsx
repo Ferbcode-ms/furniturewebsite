@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import Container from "@/components/Container";
 import Skeleton from "@/components/Skeleton";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { toast } from "sonner";
 import { Category } from "@/types";
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -155,61 +155,98 @@ export default function AdminCategoriesPage() {
             </tr>
           </thead>
           <tbody>
-            {data?.categories?.map((c: Category) => {
-              const parentCategory = data?.categories?.find(
-                (p: Category) => p._id === c.parentId
-              );
-              return (
-                <tr key={c._id} className="border-b last:border-0">
-                  <td className="py-2 pr-4">
-                    <div className="flex items-center gap-2">
-                      {c.parentId && <span className="text-gray-400">└─</span>}
-                      <span className={c.parentId ? "text-sm" : "font-medium"}>
-                        {c.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-2 pr-4">{c.description}</td>
-                  <td className="py-2 pr-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        c.parentId
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      {c.parentId ? "Sub-category" : "Main Category"}
-                    </span>
-                  </td>
-                  <td className="py-2 pr-4">
-                    {parentCategory ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-600">📁</span>
-                        <span>{parentCategory.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
-                  </td>
-                  <td className="py-2 pr-4">
-                    <div className="inline-flex gap-2">
-                      <button
-                        className="rounded-lg border px-3 py-1 text-sm"
-                        onClick={() => edit(c)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="rounded-lg border px-3 py-1 text-sm"
-                        onClick={() => remove(c._id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            {data?.categories
+              ?.filter((c: Category) => !c.parentId) // Show main categories first
+              .sort((a: Category, b: Category) => a.name.localeCompare(b.name))
+              .map((mainCategory: Category) => {
+                const subCategories =
+                  data?.categories
+                    ?.filter((c: Category) => c.parentId === mainCategory._id)
+                    .sort((a: Category, b: Category) =>
+                      a.name.localeCompare(b.name)
+                    ) || [];
+
+                return (
+                  <Fragment key={mainCategory._id}>
+                    {/* Main Category Row */}
+                    <tr className="border-b bg-gray-50">
+                      <td className="py-3 pr-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-600">📁</span>
+                          <span className="font-medium">
+                            {mainCategory.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 pr-4">{mainCategory.description}</td>
+                      <td className="py-3 pr-4">
+                        <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                          Main Category
+                        </span>
+                      </td>
+                      <td className="py-3 pr-4">
+                        <span className="text-gray-400">-</span>
+                      </td>
+                      <td className="py-3 pr-4">
+                        <div className="inline-flex gap-2">
+                          <button
+                            className="rounded-lg border px-3 py-1 text-sm"
+                            onClick={() => edit(mainCategory)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="rounded-lg border px-3 py-1 text-sm"
+                            onClick={() => remove(mainCategory._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    {/* Sub-categories Rows */}
+                    {subCategories.map((subCategory: Category) => (
+                      <tr key={subCategory._id} className="border-b">
+                        <td className="py-2 pr-4 pl-8">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-400">└─</span>
+                            <span className="text-sm">{subCategory.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-2 pr-4">{subCategory.description}</td>
+                        <td className="py-2 pr-4">
+                          <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+                            Sub-category
+                          </span>
+                        </td>
+                        <td className="py-2 pr-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-600">📁</span>
+                            <span className="text-sm">{mainCategory.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-2 pr-4">
+                          <div className="inline-flex gap-2">
+                            <button
+                              className="rounded-lg border px-3 py-1 text-sm"
+                              onClick={() => edit(subCategory)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="rounded-lg border px-3 py-1 text-sm"
+                              onClick={() => remove(subCategory._id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
+              })}
           </tbody>
         </table>
       </div>

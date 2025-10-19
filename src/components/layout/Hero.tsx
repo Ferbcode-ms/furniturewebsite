@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import Container from "../Container";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,108 +19,116 @@ const Hero = () => {
   const productCardRef = useRef(null);
   const productTitleRef = useRef(null);
 
-  useGSAP(() => {
+  useLayoutEffect(() => {
     const splitHeading = new SplitText(HeadingRef.current, { type: "chars" });
     const splitPara = new SplitText(paraWrapperRef.current, { type: "words" });
     const splitPara2 = new SplitText(para2.current, { type: "lines" });
 
     // Initial Hero animation
-    const tl = gsap.timeline({ delay: 0.5 });
-    tl.from(splitHeading.chars, {
-      yPercent: 200,
-      stagger: 0.05,
-      ease: "circ.out",
-    })
-      .from(
-        splitPara.words,
-        {
-          opacity: 0,
-          y: 40,
-          stagger: 0.03,
-          ease: "power2.out",
-        },
-        "-=0.3"
-      )
-      .from(
-        btnRef.current,
-        {
-          opacity: 0,
-          y: 40,
-          duration: 0.6,
-          ease: "power2.out",
-        },
-        "-=0.2"
-      );
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ delay: 0.5 });
+      tl.from(splitHeading.chars, {
+        yPercent: 200,
+        stagger: 0.05,
+        ease: "circ.out",
+      })
+        .from(
+          splitPara.words,
+          {
+            opacity: 0,
+            y: 40,
+            stagger: 0.03,
+            ease: "power2.out",
+          },
+          "-=0.3"
+        )
+        .from(
+          btnRef.current,
+          {
+            opacity: 0,
+            y: 40,
+            duration: 0.6,
+            ease: "power2.out",
+          },
+          "-=0.2"
+        );
+    });
 
     // Scroll-based bottom animation
     // Smooth scroll-based animation
-    const tl2 = gsap.timeline({
-      scrollTrigger: {
-        trigger: bottomSectionRef.current,
-        start: "top 85%", // trigger a bit later
-        end: "bottom 85%", // extend scroll range (longer = slower)
-      },
-    });
+    const ctx1 = gsap.context(() => {
+      const tl2 = gsap.timeline({
+        scrollTrigger: {
+          trigger: bottomSectionRef.current,
+          start: "top 85%", // trigger a bit later
+          end: "bottom 85%", // extend scroll range (longer = slower)
+        },
+      });
 
-    // Step 1: SplitText reveal (word by word)
-    tl2.from(splitPara2.lines, {
-      opacity: 0,
-      y: 80,
-      stagger: 0.08,
-      ease: "power3.out",
-    });
-
-    // Step 2: Subtle upward float of the paragraph
-    tl2.to(
-      para2.current,
-      {
-        y: -30, // smaller lift for smoother feel
-        ease: "power1.out",
-      },
-      "+=0.3"
-    );
-
-    // Step 3: Fade + scale in the product card
-    tl2.from(
-      productCardRef.current,
-      {
-        scale: 0.9,
-        duration: 0.2,
-        ease: "power2.out",
-      },
-      "+=0.3"
-    );
-
-    // Step 4: Reveal the "Product of the day" text
-    tl2.from(
-      productTitleRef.current,
-      {
+      // Step 1: SplitText reveal (word by word)
+      tl2.from(splitPara2.lines, {
         opacity: 0,
-        y: 60,
-        duration: 1,
-        ease: "power2.out",
-      },
-      "-=0.5"
-    );
+        y: 80,
+        stagger: 0.08,
+        ease: "power3.out",
+      });
 
-    // Step 5: Gentle parallax upward motion
-    tl2.to(
-      productCardRef.current,
-      {
-        y: -40,
-        ease: "power1.out",
-      },
-      "-=0.5"
-    );
+      // Step 2: Subtle upward float of the paragraph
+      tl2.to(
+        para2.current,
+        {
+          y: -30, // smaller lift for smoother feel
+          ease: "power1.out",
+        },
+        "+=0.3"
+      );
 
-    tl2.to(
-      productTitleRef.current,
-      {
-        y: -30,
-        ease: "power1.out",
-      },
-      "-=0.5"
-    );
+      // Step 3: Fade + scale in the product card
+      tl2.from(
+        productCardRef.current,
+        {
+          scale: 0.9,
+          duration: 0.2,
+          ease: "power2.out",
+        },
+        "+=0.3"
+      );
+
+      // Step 4: Reveal the "Product of the day" text
+      tl2.from(
+        productTitleRef.current,
+        {
+          opacity: 0,
+          y: 60,
+          duration: 1,
+          ease: "power2.out",
+        },
+        "-=0.5"
+      );
+
+      // Step 5: Gentle parallax upward motion
+      tl2.to(
+        productCardRef.current,
+        {
+          y: -40,
+          ease: "power1.out",
+        },
+        "-=0.5"
+      );
+
+      tl2.to(
+        productTitleRef.current,
+        {
+          y: -30,
+          ease: "power1.out",
+        },
+        "-=0.5"
+      );
+    });
+    return () => {
+      ctx.revert();
+      ctx1.revert();
+    };
   });
 
   return (

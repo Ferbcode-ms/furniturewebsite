@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import Container from "@/components/Container";
@@ -17,12 +17,12 @@ const ArrivalsSection = ({ products }: ArrivalsSectionProps) => {
   const [duplicatedProducts, setDuplicatedProducts] = useState<Product[]>([]);
   const isDragging = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     gsap.registerPlugin(Draggable);
     setDuplicatedProducts([...products, ...products, ...products]);
   }, [products]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!trackRef.current || duplicatedProducts.length === 0) return;
 
     const track = trackRef.current;
@@ -31,35 +31,40 @@ const ArrivalsSection = ({ products }: ArrivalsSectionProps) => {
     let xPos = 0;
 
     // Auto-scroll animation (same as trending)
-    const animate = () => {
-      if (!isDragging.current) {
-        xPos -= 1;
-        if (xPos <= -totalWidth) xPos = 0;
-        gsap.set(track, { x: xPos });
-      }
-      requestAnimationFrame(animate);
-    };
-    animate();
-
-    // Simple drag functionality (like TrendingSection)
-    Draggable.create(track, {
-      type: "x",
-      inertia: true,
-      onDragStart: () => {
-        isDragging.current = true;
-      },
-      onDrag: function () {
-        xPos = this.x;
-        if (xPos > 0) {
-          xPos = -totalWidth;
+    const ctx = gsap.context(() => {
+      const animate = () => {
+        if (!isDragging.current) {
+          xPos -= 1;
+          if (xPos <= -totalWidth) xPos = 0;
           gsap.set(track, { x: xPos });
-          this.update();
         }
-      },
-      onDragEnd: () => {
-        setTimeout(() => (isDragging.current = false), 300);
-      },
+        requestAnimationFrame(animate);
+      };
+      animate();
+
+      // Simple drag functionality (like TrendingSection)
+      Draggable.create(track, {
+        type: "x",
+        inertia: true,
+        onDragStart: () => {
+          isDragging.current = true;
+        },
+        onDrag: function () {
+          xPos = this.x;
+          if (xPos > 0) {
+            xPos = -totalWidth;
+            gsap.set(track, { x: xPos });
+            this.update();
+          }
+        },
+        onDragEnd: () => {
+          setTimeout(() => (isDragging.current = false), 300);
+        },
+      });
     });
+    return () => {
+      ctx.revert();
+    };
   }, [duplicatedProducts, products.length]);
 
   return (

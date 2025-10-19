@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 import SimpleLoader from "@/components/SimpleLoader";
 import { Search } from "lucide-react";
 import { Product, HierarchicalCategory } from "@/types";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import AnimatedButton from "@/components/AnimatedButton";
 
 // Metadata moved to layout.tsx for client components
@@ -162,6 +162,9 @@ export default function ProductsPage() {
         <p className="mt-4 text-neutral-600 text-[12px] sm:text-base max-w-2xl">
           {selected === "All"
             ? "Discover our carefully curated collection of premium furniture pieces."
+            : (hierarchicalCategories.find((cat) => cat.name === selected)
+                ?.subCategories?.length ?? 0) > 0
+            ? `Explore our ${selected.toLowerCase()} collection and its subcategories, designed for modern living.`
             : `Explore our ${selected.toLowerCase()} collection, designed for modern living.`}
         </p>
       </motion.div>
@@ -212,32 +215,85 @@ export default function ProductsPage() {
       </div>
 
       {/* Categories List */}
-      <div className="mb-8 overflow-x-auto">
-        <div className="flex gap-3 pb-2">
-          <button
-            onClick={() => handleSelect("All")}
-            className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors border-1 border-[var(--textcolor)] cursor-pointer ${
-              selected === "All"
-                ? "bg-[var(--textcolor)] text-background"
-                : "bg-background "
-            }`}
-          >
-            ALL
-          </button>
-          {hierarchicalCategories.map((cat) => (
+      <div className="mb-8">
+        {/* Main Categories */}
+        <div className="overflow-x-auto">
+          <div className="flex gap-3 pb-2">
             <button
-              key={cat.name}
-              onClick={() => handleSelect(cat.name)}
-              className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors  border-1 border-[var(--textcolor)] cursor-pointer ${
-                selected === cat.name
+              onClick={() => handleSelect("All")}
+              className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors border-1 border-[var(--textcolor)] cursor-pointer ${
+                selected === "All"
                   ? "bg-[var(--textcolor)] text-background"
-                  : "bg-background"
+                  : "bg-background "
               }`}
             >
-              {cat.name.toUpperCase()}
+              ALL
             </button>
-          ))}
+            {hierarchicalCategories.map((cat) => (
+              <button
+                key={cat.name}
+                onClick={() => handleSelect(cat.name)}
+                className={`sm:px-6 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-colors  border-1 border-[var(--textcolor)] cursor-pointer ${
+                  selected === cat.name
+                    ? "bg-[var(--textcolor)] text-background"
+                    : "bg-background"
+                }`}
+              >
+                {cat.name.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Subcategories - Show when a main category with subcategories is selected or when a subcategory is selected */}
+        <AnimatePresence>
+          {selected !== "All" &&
+            (() => {
+              // Find the main category that contains the selected category (either main or sub)
+              const mainCategory = hierarchicalCategories.find(
+                (cat) =>
+                  cat.name === selected ||
+                  (cat.subCategories && cat.subCategories.includes(selected))
+              );
+              return (mainCategory?.subCategories?.length ?? 0) > 0;
+            })() && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 overflow-x-auto"
+              >
+                <div className="flex gap-2 pb-2">
+                  <span className="text-sm text-neutral-500 px-2 py-2 whitespace-nowrap">
+                    Subcategories:
+                  </span>
+                  {(() => {
+                    // Find the main category that contains the selected category
+                    const mainCategory = hierarchicalCategories.find(
+                      (cat) =>
+                        cat.name === selected ||
+                        (cat.subCategories &&
+                          cat.subCategories.includes(selected))
+                    );
+                    return mainCategory?.subCategories?.map((subCat) => (
+                      <button
+                        key={subCat}
+                        onClick={() => handleSelect(subCat)}
+                        className={`px-4 py-2 rounded-full text-xs whitespace-nowrap transition-colors border-1 border-neutral-300 cursor-pointer ${
+                          selected === subCat
+                            ? "bg-neutral-800 text-white border-neutral-800"
+                            : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
+                        }`}
+                      >
+                        {subCat.toUpperCase()}
+                      </button>
+                    ));
+                  })()}
+                </div>
+              </motion.div>
+            )}
+        </AnimatePresence>
       </div>
 
       {/* Products Grid with Animation */}

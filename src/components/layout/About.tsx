@@ -3,7 +3,7 @@ import Container from "@/components/Container";
 import AnimatedButton from "@/components/AnimatedButton";
 import Link from "next/link";
 import Image from "next/image";
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -15,64 +15,63 @@ export default function AboutPage() {
   const paragraphRef = useRef(null);
   const imgWrapperRef = useRef(null); // ✅ parent div for both images
 
-  useEffect(() => {
-    // ✅ Split heading + paragraph
-    const headingSplit = new SplitText(headingRef.current, {
-      type: "words,chars",
-      charsClass: "char",
-      wordsClass: "word",
-    });
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // ✅ Split heading + paragraph
+      const headingSplit = new SplitText(headingRef.current, {
+        type: "words,chars",
+        charsClass: "char",
+        wordsClass: "word",
+      });
 
-    const paraSplit = new SplitText(paragraphRef.current, {
-      type: "lines",
-      linesClass: "line overflow-hidden",
-    });
+      const paraSplit = new SplitText(paragraphRef.current, {
+        type: "lines",
+        linesClass: "line overflow-hidden",
+      });
 
-    // ✅ Text entrance animation
-    const textTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: headingRef.current,
-        start: "top 80%",
-        end: "top 20%",
-      },
-    });
-
-    textTl
-      .from(headingSplit.chars, {
-        opacity: 0,
-        y: 50,
-        stagger: 0.02,
-        ease: "power3.out",
-      })
-      .from(
-        paraSplit.lines,
-        {
-          opacity: 0,
-          y: 20,
-          stagger: 0.1,
-          ease: "power2.out",
+      // ✅ Text entrance animation
+      const textTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: "top 80%",
+          end: "top 20%",
         },
-        "-=0.3"
-      );
+      });
 
-    // ✅ Animate the parent image wrapper smoothly with scroll
-    gsap.to(imgWrapperRef.current, {
-      y: -50, // move upward while scrolling
-      ease: "none",
-      scrollTrigger: {
-        trigger: imgWrapperRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1, // smooth motion
-        // markers: true, // enable to debug
-      },
+      textTl
+        .from(headingSplit.chars, {
+          opacity: 0,
+          y: 50,
+          stagger: 0.02,
+          ease: "power3.out",
+        })
+        .from(
+          paraSplit.lines,
+          {
+            opacity: 0,
+            y: 20,
+            stagger: 0.1,
+            ease: "power2.out",
+          },
+          "-=0.3"
+        );
+
+      // ✅ Animate the parent image wrapper smoothly with scroll
+      gsap.to(imgWrapperRef.current, {
+        y: -50, // move upward while scrolling
+        ease: "none",
+        scrollTrigger: {
+          trigger: imgWrapperRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1, // smooth motion
+          // markers: true, // enable to debug
+        },
+      });
     });
-
     // ✅ Cleanup
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      headingSplit.revert();
-      paraSplit.revert();
+      ctx.revert();
     };
   }, []);
 
