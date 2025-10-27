@@ -2,6 +2,7 @@ export interface CategoryDoc {
   _id: string;
   name: string;
   description?: string;
+  image?: string;
   parentId?: string | null; // null for main categories, string for sub-categories
   isSubCategory?: boolean;
   createdAt?: string | Date;

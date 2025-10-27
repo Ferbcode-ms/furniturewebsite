@@ -13,7 +13,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { name, description, parentId } = await req.json();
+  const { name, description, image, parentId } = await req.json();
   if (!name)
     return NextResponse.json({ error: "Name required" }, { status: 400 });
   const db = await getDb();
@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
   const res = await db.collection("categories").insertOne({
     name,
     description: description || "",
+    image: image || "",
     parentId: parentId || null,
     isSubCategory: !!parentId,
     createdAt: new Date(),

@@ -8,7 +8,7 @@ export async function GET() {
     const cats = (await db
       .collection("categories")
       .find({})
-      .project({ name: 1, parentId: 1, isSubCategory: 1, _id: 1 })
+      .project({ name: 1, parentId: 1, isSubCategory: 1, _id: 1, image: 1 })
       .sort({ name: 1 })
       .toArray()) as Category[];
 
@@ -22,6 +22,7 @@ export async function GET() {
     const hierarchicalCategories: HierarchicalCategory[] = mainCategories.map(
       (main: Category) => ({
         name: main.name,
+        image: main.image,
         subCategories: subCategories
           .filter((sub: Category) => sub.parentId === main._id.toString())
           .map((sub: Category) => sub.name),

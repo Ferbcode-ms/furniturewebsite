@@ -4,7 +4,7 @@ import { z } from "zod";
 export const productCreateSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long"),
   price: z.number().positive("Price must be positive"),
-  image: z.string().url("Invalid image URL"),
+  image: z.string().min(1, "Image URL is required"), // Accept both URLs and Cloudinary URLs
   category: z.string().min(1, "Category is required"),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -23,6 +23,7 @@ export const productUpdateSchema = productCreateSchema.partial();
 export const categoryCreateSchema = z.object({
   name: z.string().min(1, "Name is required").max(50, "Name too long"),
   description: z.string().optional(),
+  image: z.string().optional(),
 });
 
 export const categoryUpdateSchema = categoryCreateSchema.partial();

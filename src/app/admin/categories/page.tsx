@@ -11,9 +11,40 @@ export default function AdminCategoriesPage() {
   const { data, mutate } = useSWR("/api/admin/categories", fetcher);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [parentId, setParentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
+
+  async function handleImageUpload(file: File) {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      setImage(data.url);
+      setPreviewImage(data.url);
+      toast.success("Image uploaded successfully");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function createCategory(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +57,7 @@ export default function AdminCategoriesPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, parentId }),
+        body: JSON.stringify({ name, description, image, parentId }),
       });
       const d = await res.json();
       if (!res.ok) {
@@ -37,7 +68,9 @@ export default function AdminCategoriesPage() {
       }
       setName("");
       setDescription("");
+      setImage("");
       setParentId(null);
+      setPreviewImage("");
       const wasEdit = Boolean(editingId);
       setEditingId(null);
       toast.success(wasEdit ? "Category updated" : "Category created");
@@ -67,6 +100,8 @@ export default function AdminCategoriesPage() {
     setEditingId(c._id);
     setName(c.name || "");
     setDescription(c.description || "");
+    setImage(c.image || "");
+    setPreviewImage(c.image || "");
     setParentId(c.parentId || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -75,7 +110,9 @@ export default function AdminCategoriesPage() {
     setEditingId(null);
     setName("");
     setDescription("");
+    setImage("");
     setParentId(null);
+    setPreviewImage("");
   }
 
   return (
@@ -94,35 +131,76 @@ export default function AdminCategoriesPage() {
       )}
       <form
         onSubmit={createCategory}
-        className="sm:mx-20 mx-5 my-10 grid sm:grid-cols-4 gap-3 max-w-3xl"
+        className="sm:mx-20 mx-5 my-10 space-y-4 max-w-3xl"
       >
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          required
-          className="rounded-lg border px-3 py-2"
-        />
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description"
-          className="rounded-lg border px-3 py-2"
-        />
-        <select
-          value={parentId || ""}
-          onChange={(e) => setParentId(e.target.value || null)}
-          className="rounded-lg border px-3 py-2"
-        >
-          <option value="">📁 Main Category</option>
-          {data?.categories
-            ?.filter((c: Category) => !c.parentId)
-            .map((c: Category) => (
-              <option key={c._id} value={c._id}>
-                📁 {c.name}
-              </option>
-            ))}
-        </select>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+            required
+            className="rounded-lg border px-3 py-2"
+          />
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
+            className="rounded-lg border px-3 py-2"
+          />
+          <select
+            value={parentId || ""}
+            onChange={(e) => setParentId(e.target.value || null)}
+            className="rounded-lg border px-3 py-2"
+          >
+            <option value="">📁 Main Category</option>
+            {data?.categories
+              ?.filter((c: Category) => !c.parentId)
+              .map((c: Category) => (
+                <option key={c._id} value={c._id}>
+                  📁 {c.name}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        {/* Image Upload Section */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Category Image</label>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageUpload(file);
+                }}
+                disabled={uploading}
+                className="rounded-lg border px-3 py-2 w-full"
+              />
+              {uploading && (
+                <p className="text-sm text-neutral-500">Uploading...</p>
+              )}
+              <input
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                placeholder="Or enter image URL"
+                className="rounded-lg border px-3 py-2 w-full"
+              />
+            </div>
+            {previewImage || image ? (
+              <div className="rounded-lg border p-2 flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewImage || image}
+                  alt="Preview"
+                  className="max-h-32 max-w-full object-contain rounded"
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
+
         <div className="flex gap-2">
           <button
             type="submit"
@@ -140,7 +218,7 @@ export default function AdminCategoriesPage() {
             </button>
           )}
         </div>
-        {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </form>
 
       <div className="sm:mx-20 mx-5 overflow-x-auto">

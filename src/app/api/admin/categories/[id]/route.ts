@@ -22,7 +22,7 @@ export async function PUT(
   const { id } = await params;
   const _id = toObjectId(id);
   if (!_id) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-  const { name, description, parentId } = await req.json();
+  const { name, description, image, parentId } = await req.json();
   const db = await getDb();
 
   // Find existing category to detect rename
@@ -72,6 +72,7 @@ export async function PUT(
       $set: {
         name,
         description,
+        image: image !== undefined ? image : undefined,
         parentId: parentId || null,
         isSubCategory: !!parentId,
       },

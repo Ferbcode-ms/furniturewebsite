@@ -28,10 +28,12 @@ export interface Category {
   parentId?: string;
   isSubCategory?: boolean;
   description?: string;
+  image?: string;
 }
 
 export interface HierarchicalCategory {
   name: string;
+  image?: string;
   subCategories: string[];
 }
 

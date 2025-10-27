@@ -17,6 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 type HierarchicalCategory = {
   name: string;
+  image?: string;
   subCategories: string[];
 };
 
@@ -85,7 +86,7 @@ export default function Home() {
           scrub: 1,
           pin: true,
           anticipatePin: 1,
-          markers: true,
+
           onEnter: () => console.log("🎬 Horizontal scroll started!"),
           onUpdate: (self) =>
             console.log("📈 Progress:", self.progress.toFixed(2)),
@@ -100,12 +101,9 @@ export default function Home() {
     };
   }, [categories]);
 
-  const images = [
-    "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-    "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80",
-  ];
+  // Default placeholder image for categories without images
+  const defaultCategoryImage =
+    "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80";
 
   if (loading) return <SimpleLoader />;
 
@@ -123,7 +121,7 @@ export default function Home() {
               >
                 <div className="flex flex-col items-center gap-6">
                   <Image
-                    src={images[index % images.length]}
+                    src={category.image || defaultCategoryImage}
                     alt={category.name}
                     width={480}
                     height={240}
@@ -179,7 +177,7 @@ export default function Home() {
             >
               <div className="flex flex-col sm:flex-row items-center gap-10">
                 <Image
-                  src={images[index % images.length]}
+                  src={category.image || defaultCategoryImage}
                   alt={category.name}
                   width={280}
                   height={320}

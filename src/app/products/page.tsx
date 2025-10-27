@@ -33,6 +33,8 @@ export default function ProductsPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loadingCats, setLoadingCats] = useState<boolean>(true);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const productsPerPage = 12;
 
   useEffect(() => {
     async function loadCats() {
@@ -125,6 +127,17 @@ export default function ProductsPage() {
 
     return filtered;
   }, [allProducts, selected, searchQuery, sortBy, hierarchicalCategories]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selected, searchQuery, sortBy]);
 
   const handleSelect = useCallback((next: string) => {
     setSelected(next);
@@ -306,7 +319,7 @@ export default function ProductsPage() {
           transition={{ duration: 0.5 }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
         >
-          {filteredProducts.map((p: Product, i) => (
+          {paginatedProducts.map((p: Product, i) => (
             <motion.div
               key={p._id || p.id}
               initial={{ opacity: 0, y: 20 }}
@@ -354,14 +367,87 @@ export default function ProductsPage() {
         </motion.div>
       )}
 
-      {/* Results Count */}
-      <div className="mt-8 text-center text-sm text-neutral-500">
-        {loadingProducts
-          ? "Loading products..."
-          : `Showing ${filteredProducts.length} product${
-              filteredProducts.length !== 1 ? "s" : ""
-            }`}
-      </div>
+      {/* Results Count and Pagination */}
+      {!loadingProducts && filteredProducts.length > 0 && (
+        <>
+          <div className="mt-8 text-center text-sm text-neutral-500">
+            Showing {startIndex + 1}-
+            {Math.min(endIndex, filteredProducts.length)} of{" "}
+            {filteredProducts.length} products
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-center items-center gap-2">
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-full border-1 border-[var(--textcolor)] transition-colors ${
+                  currentPage === 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[var(--textcolor)] hover:text-background cursor-pointer"
+                }`}
+              >
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex gap-2 items-center">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => {
+                    // Show first page, last page, current page, and pages around current
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-4 py-2 rounded-full border-1 border-[var(--textcolor)] transition-colors min-w-[40px] ${
+                            currentPage === page
+                              ? "bg-[var(--textcolor)] text-background"
+                              : "hover:bg-[var(--textcolor)] hover:text-background cursor-pointer"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (
+                      page === currentPage - 2 ||
+                      page === currentPage + 2
+                    ) {
+                      return (
+                        <span key={page} className="px-2">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  }
+                )}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-full border-1 border-[var(--textcolor)] transition-colors ${
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[var(--textcolor)] hover:text-background cursor-pointer"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </Container>
   );
 }

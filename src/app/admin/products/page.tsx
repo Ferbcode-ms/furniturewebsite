@@ -33,6 +33,36 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newCat, setNewCat] = useState("");
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
+
+  async function handleImageUpload(file: File) {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      setForm((f) => ({ ...f, image: data.url }));
+      setPreviewImage(data.url);
+      toast.success("Image uploaded successfully");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function createProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -70,6 +100,7 @@ export default function AdminProductsPage() {
         careInstructions: "",
         specifications: "",
       });
+      setPreviewImage("");
       const wasEdit = Boolean(editingId);
       setEditingId(null);
       toast.success(wasEdit ? "Product updated" : "Product created");
@@ -112,6 +143,7 @@ export default function AdminProductsPage() {
       careInstructions: p.careInstructions || "",
       specifications: p.specifications || "",
     });
+    setPreviewImage(p.image || "");
 
     // Set the main category for editing
     if (p.category) {
@@ -153,6 +185,7 @@ export default function AdminProductsPage() {
       specifications: "",
     });
     setSelectedMainCategory("");
+    setPreviewImage("");
   }
 
   async function addCategoryInline(e: React.FormEvent) {
@@ -232,15 +265,29 @@ export default function AdminProductsPage() {
               required
               className="rounded-lg border px-3 py-2"
             />
-            <input
-              value={form.image}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, image: e.target.value }))
-              }
-              placeholder="Image URL"
-              required
-              className="rounded-lg border px-3 py-2 sm:col-span-2"
-            />
+            <div className="sm:col-span-2 space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageUpload(file);
+                }}
+                disabled={uploading}
+                className="rounded-lg border px-3 py-2 w-full"
+              />
+              {uploading && (
+                <p className="text-sm text-neutral-500">Uploading...</p>
+              )}
+              <input
+                value={form.image}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, image: e.target.value }))
+                }
+                placeholder="Or enter image URL"
+                className="rounded-lg border px-3 py-2 w-full"
+              />
+            </div>
             <div className="grid sm:grid-cols-2 gap-3 sm:col-span-2">
               <div className="space-y-2">
                 <select
@@ -420,7 +467,9 @@ export default function AdminProductsPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={
-              form.image || "https://via.placeholder.com/600x400?text=Preview"
+              previewImage ||
+              form.image ||
+              "https://via.placeholder.com/600x400?text=Preview"
             }
             alt="Preview"
             className="h-48 w-full object-cover rounded-lg border"
