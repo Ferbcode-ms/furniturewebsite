@@ -34,7 +34,7 @@ export default function ProductsPage() {
   const [loadingCats, setLoadingCats] = useState<boolean>(true);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const productsPerPage = 12;
+  const productsPerPage = 8;
 
   useEffect(() => {
     async function loadCats() {
@@ -138,6 +138,11 @@ export default function ProductsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [selected, searchQuery, sortBy]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   const handleSelect = useCallback((next: string) => {
     setSelected(next);

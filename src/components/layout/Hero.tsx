@@ -133,8 +133,8 @@ const Hero = () => {
 
   return (
     <Container>
-      <div className="flex md:flex-row mt-10 flex-col gap-10 items-end relative overflow-hidden min-h-[70vh] md:min-h-auto bg-[url(https://res.cloudinary.com/duk94ehtq/image/upload/v1761586365/leon-macapagal-ke1Kd8FBCdU-unsplash_qkm7aj.jpg)] bg-cover bg-no-repeat">
-        <div className="absolute inset-0 bg-black/30 z-0"></div>
+      <div className="flex md:flex-row mt-10 flex-col gap-10 items-end relative overflow-hidden min-h-[70vh] md:min-h-auto bg-[url(https://res.cloudinary.com/duk94ehtq/image/upload/v1761630109/abhinav-sharma-Js76NA2Qnzg-unsplash_xufiyx.jpg)] bg-cover bg-no-repeat">
+        <div className="absolute inset-0 bg-black/40 z-0"></div>
         <div className="p-4 w-full relative sm:px-10 z-10 md:z-auto">
           {/* Heading */}
           <div

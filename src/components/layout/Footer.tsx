@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className=" relative m-2 sm:m-4  mt-20 bg-[url(https://res.cloudinary.com/duk94ehtq/image/upload/v1761586644/usman-yousaf-FXqEZlf-7Pw-unsplash_pytvbz.jpg)] bg-cover bg-center  text-white ">
+    <footer className=" relative m-2 sm:m-4  mt-20 bg-[url(https://res.cloudinary.com/duk94ehtq/image/upload/v1761630207/abhinav-sharma-j_hMDRwWCsM-unsplash_ipctum.jpg)] bg-cover bg-center  text-white ">
       <div className="absolute inset-0 h-full w-full bg-black/40 "></div>
       <div className=" flex flex-col justify-between z-10 relative ">
         {/* Links grid */}
