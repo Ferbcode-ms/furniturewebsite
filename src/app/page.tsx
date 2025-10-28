@@ -237,7 +237,7 @@ export default function Home() {
           className="relative flex items-center justify-center min-h-[60vh] overflow-hidden"
         >
           <Image
-            src="https://plus.unsplash.com/premium_photo-1683120656283-64c0815111f2?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1170"
+            src="https://images.unsplash.com/photo-1651910031229-d6b1e6d0308d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074"
             alt="Background"
             width={1170}
             height={780}
@@ -246,9 +246,9 @@ export default function Home() {
           <div className="absolute inset-0 h-full w-full bg-black/30"></div>
           <div className="text-sm sm:text-lg font-medium bg-background px-15 sm:px-25 py-10 sm:py-15 sm:m-50 m-25 w-150 capitalize text-center z-10">
             Since <br />
-            <p className="text-7xl sm:text-9xl m-5">1958</p> <br />
+            <p className="text-7xl sm:text-9xl m-5">2019</p> <br />
             <p>
-              We create furniture masterpieces that tell stories and store
+              We create masterpieces architecture that tell stories and store
               memories that don’t fade with trends.
             </p>
             <Link href="/products">

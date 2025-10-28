@@ -99,7 +99,7 @@ const TrendingSection = ({ products }: TrendingSectionProps) => {
                     {item.name}
                   </p>
                   <p className="text-xl sm:text-2xl md:text-3xl font-semibold mt-1 sm:mt-2">
-                    ${item.price}
+                    ₹{item.price}
                   </p>
                   <div className="absolute inset-0 duration-300 rounded-lg pointer-events-none" />
                 </div>

@@ -157,9 +157,9 @@ export default function ProductDetail({
           }),
         }}
       />
-      <Container className=" sm:m-20 m-5 ">
+      <Container className=" sm:m-15 m-5 ">
         {/* Breadcrumb with updated styling */}
-        <nav className="text-sm text-textcolor/70 uppercase tracking-wider pt-10 pl-5 sm:pl-20">
+        <nav className="text-sm text-textcolor/70 uppercase tracking-wider pt-10 pl-5 sm:pl-10">
           <Link
             href="/products"
             className="hover:text-textcolor transition-colors"
@@ -170,7 +170,7 @@ export default function ProductDetail({
           <span className="text-textcolor">{name}</span>
         </nav>
 
-        <div className="sm:mx-20 sm:my-10 my-5 grid md:grid-cols-2  gap-6 sm:gap-16 items-start border-2 border-textcolor/10 p-10 rounded-lg bg-[var(--productcard)]">
+        <div className="sm:mx-10 sm:my-10 my-5 grid md:grid-cols-2  gap-6 sm:gap-12 items-start  p-10 rounded-lg bg-[var(--productcard)]  sm:mr-30 ">
           {/* Image container with improved styling */}
           <div className="group rounded-lg overflow-hidden bg-[var(--productcard)] relative ">
             <Image
@@ -185,13 +185,13 @@ export default function ProductDetail({
           </div>
 
           {/* Product details with updated styling */}
-          <div className="space-y-8">
+          <div className="">
             <div>
               <h1 className="text-4xl sm:text-5xl font-medium tracking-tight text-textcolor">
                 {name}
               </h1>
               <p className="mt-4 text-2xl sm:text-3xl font-semibold text-textcolor">
-                ${price}
+                ₹{price}
               </p>
               {product?.category && (
                 <p className="mt-2 text-sm uppercase tracking-wider text-textcolor/70">
@@ -276,14 +276,14 @@ export default function ProductDetail({
               </div>
 
               <p className="text-sm uppercase tracking-wider text-textcolor/70">
-                Free shipping on orders over $250 • 30-day returns
+                Free shipping on orders over ₹250 • 30-day returns
               </p>
             </div>
           </div>
         </div>
 
         {/* Related products section */}
-        <div className="sm:mt-32 sm:m-20 m-8">
+        <div className="sm:mt-32 sm:m-10 m-8">
           <h2 className="text-3xl sm:text-4xl font-medium text-textcolor mb-2">
             You May Also Like
           </h2>

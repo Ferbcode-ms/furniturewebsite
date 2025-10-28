@@ -105,17 +105,17 @@ export default function AboutPage() {
             ref={headingRef}
             className="text-2xl sm:text-5xl p-5 overflow-hidden"
           >
-            WELCOME TO OUR FURNITURE SHOP, WHERE TIMELESS AND STYLISH DESIGNS
-            MEET STORYTELLING.
+            WELCOME TO OUR DOME COMPANY, WHERE STYLE, STRENGTH, AND INNOVATION
+            COME TOGETHER.
           </h2>
 
           <p
             ref={paragraphRef}
             className="sm:text-xl p-4 capitalize overflow-hidden"
           >
-            Every piece of furniture in our collection tells a personal story.
-            Custom-designed and personalized to enhance your home&apos;s
-            aesthetics.
+            Every dome is a masterpiece — personalized to elevate your lifestyle
+            and architectural aesthetic. From concept to creation, every dome is
+            designed to inspire and endure
           </p>
 
           <div className="ml-4">

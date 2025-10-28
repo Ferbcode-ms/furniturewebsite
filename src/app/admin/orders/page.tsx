@@ -133,10 +133,10 @@ export default function AdminOrdersPage() {
             <td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${
               it.quantity
             }</td>
-            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">$${Number(
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">₹{Number(
               it.price
             ).toFixed(2)}</td>
-            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">$${(
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:right">₹{(
               Number(it.price) * Number(it.quantity)
             ).toFixed(2)}</td>
           </tr>`
@@ -211,13 +211,13 @@ export default function AdminOrdersPage() {
                 <h3>Summary</h3>
                 <table>
                   <tbody class="totals">
-                    <tr><td>Subtotal</td><td style="text-align:right">$${Number(
+                    <tr><td>Subtotal</td><td style="text-align:right">₹{Number(
                       subtotal
                     ).toFixed(2)}</td></tr>
-                    <tr><td>Shipping</td><td style="text-align:right">$${Number(
+                    <tr><td>Shipping</td><td style="text-align:right">₹{Number(
                       shipping
                     ).toFixed(2)}</td></tr>
-                    <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>$${Number(
+                    <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>₹{Number(
                       grand
                     ).toFixed(2)}</strong></td></tr>
                   </tbody>
@@ -384,7 +384,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className="py-2 pr-2 sm:pr-4">
                         <div className="text-sm font-medium">
-                          ${o.total?.toFixed?.(2) || "-"}
+                          ₹{o.total?.toFixed?.(2) || "-"}
                         </div>
                         <div className="text-xs text-gray-500 lg:hidden">
                           {new Date(o.createdAt).toLocaleDateString()}
@@ -560,11 +560,11 @@ export default function AdminOrdersPage() {
                                 {it.name}
                               </div>
                               <div className="text-xs text-neutral-600 mt-1">
-                                ${it.price.toFixed(2)} × {it.quantity}
+                                ₹{it.price.toFixed(2)} × {it.quantity}
                               </div>
                             </div>
                             <div className="text-xs sm:text-sm font-medium text-right flex-shrink-0">
-                              ${(it.price * it.quantity).toFixed(2)}
+                              ₹{(it.price * it.quantity).toFixed(2)}
                             </div>
                           </div>
                         ))}
@@ -573,13 +573,13 @@ export default function AdminOrdersPage() {
                         <div className="flex justify-between">
                           <span>Subtotal</span>
                           <span>
-                            ${o.totals?.subtotal?.toFixed?.(2) || "-"}
+                            ₹{o.totals?.subtotal?.toFixed?.(2) || "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Shipping</span>
                           <span>
-                            ${o.totals?.shipping?.toFixed?.(2) || "-"}
+                            ₹{o.totals?.shipping?.toFixed?.(2) || "-"}
                           </span>
                         </div>
                         <div className="flex justify-between font-semibold text-sm sm:text-base border-t pt-2 mt-2">

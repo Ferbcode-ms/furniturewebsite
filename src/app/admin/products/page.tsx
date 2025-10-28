@@ -479,7 +479,7 @@ export default function AdminProductsPage() {
               {form.name || "Product name"}
             </div>
             <div className="text-sm text-neutral-600">
-              ${form.price || "0.00"}
+              ₹{form.price || "0.00"}
             </div>
             {form.tags?.length > 0 && (
               <div className="mt-1 text-xs text-neutral-500">
@@ -507,7 +507,7 @@ export default function AdminProductsPage() {
               <tr key={p._id} className="border-b last:border-0">
                 <td className="py-2 pr-4">{p.name}</td>
                 <td className="py-2 pr-4">
-                  ${p.price?.toFixed?.(2) ?? p.price}
+                  ₹{p.price?.toFixed?.(2) ?? p.price}
                 </td>
                 <td className="py-2 pr-4">{p.category || "-"}</td>
                 <td className="py-2 pr-4 max-w-xs truncate">

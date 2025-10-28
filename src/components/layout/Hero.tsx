@@ -133,15 +133,15 @@ const Hero = () => {
 
   return (
     <Container>
-      <div className="flex md:flex-row mt-10 flex-col gap-10 items-end relative overflow-hidden min-h-[70vh] md:min-h-auto bg-[url(https://images.unsplash.com/photo-1723376779603-69f15cdfa034?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] bg-cover bg-no-repeat">
-        <div className="absolute inset-0 bg-black/15 z-0"></div>
+      <div className="flex md:flex-row mt-10 flex-col gap-10 items-end relative overflow-hidden min-h-[70vh] md:min-h-auto bg-[url(https://res.cloudinary.com/duk94ehtq/image/upload/v1761586365/leon-macapagal-ke1Kd8FBCdU-unsplash_qkm7aj.jpg)] bg-cover bg-no-repeat">
+        <div className="absolute inset-0 bg-black/30 z-0"></div>
         <div className="p-4 w-full relative sm:px-10 z-10 md:z-auto">
           {/* Heading */}
           <div
-            className="sm:ml-20 my-10 sm:my-20 sm:mb-30 font-semibold text-[60px] sm:text-[250px] sm:leading-[200px] text-[#f4f0ea] overflow-hidden"
+            className="sm:ml-20 my-10 sm:my-20 sm:mb-30 font-semibold text-[60px] sm:text-[130px] sm:leading-[150px] text-[#f4f0ea] overflow-hidden"
             ref={HeadingRef}
           >
-            FURNITURE
+            NEW NANAKSAR ART GALLERY
           </div>
 
           {/* Paragraph */}
@@ -150,9 +150,9 @@ const Hero = () => {
               ref={paraWrapperRef}
               className="text-sm sm:text-lg text-white flex flex-col gap-1 overflow-hidden"
             >
-              <p>ADD ELEGANCE AND CHARM TO YOUR SPACE</p>
-              <p>WITH FURNITURE THAT</p>
-              <p>EXPRESSES YOUR INDIVIDUALITY</p>
+              <p>ADD ELEGANCE AND STRENGTH TO YOUR SPACE</p>
+              <p>WITH DOMES THAT</p>
+              <p>REFLECT YOUR VISION AND STYLE</p>
             </div>
 
             {/* Button */}
@@ -177,7 +177,7 @@ const Hero = () => {
               className="text-center w-full sm:w-1/2 mx-auto font-semibold text-2xl sm:text-6xl text-[#f4f0ea]"
               ref={para2}
             >
-              WHERE STYLE ENDURES: TIMELESS FURNITURE FOR YOUR STORY
+              WHERE ARCHITECTURE ENDURES: CREATING DOMES THAT LAST A LIFETIME
             </p>
 
             {/* Product Card */}
@@ -186,17 +186,17 @@ const Hero = () => {
               ref={productCardRef}
             >
               <Image
-                src="https://plus.unsplash.com/premium_photo-1678074057896-eee996d4a23e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src="https://5.imimg.com/data5/SELLER/Default/2024/2/387885660/CQ/LV/KE/26774566/ccnfgn-500x500.png"
                 alt="chair"
                 width={280}
                 height={320}
                 className="h-40 sm:h-70 w-50 sm:w-70 mb-3 object-cover mx-auto group-hover:scale-105 transition duration-700 rounded-lg"
               />
               <p className="group-hover:opacity-100 opacity-0 text-center transition duration-700">
-                white chair -
+                EAGLE -
               </p>
               <p className="font-bold group-hover:opacity-100 opacity-0 text-center transition duration-700">
-                $ 400
+                ₹ 400
               </p>
             </div>
 

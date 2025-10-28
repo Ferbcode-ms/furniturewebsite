@@ -75,7 +75,7 @@ export default function OrderPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      ${item.price.toFixed(2)} each
+                      ₹{item.price.toFixed(2)} each
                     </p>
                     <div className="mt-2 flex items-center gap-2">
                       <button
@@ -114,7 +114,7 @@ export default function OrderPage() {
                   </div>
                   <div className="text-sm font-medium text-right flex-shrink-0">
                     <div className="sm:hidden text-xs text-gray-500">Total</div>
-                    <div>${(item.price * item.quantity).toFixed(2)}</div>
+                    <div>₹{(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                 </div>
               ))}
@@ -122,15 +122,15 @@ export default function OrderPage() {
             <div className="mt-4 border-t pt-4 space-y-1 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>${shipping.toFixed(2)}</span>
+                <span>₹{shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-semibold text-base">
                 <span>Total</span>
-                <span>${grandTotal.toFixed(2)}</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>

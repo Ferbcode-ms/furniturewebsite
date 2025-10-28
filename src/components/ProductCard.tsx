@@ -51,7 +51,7 @@ export default function ProductCard({
       <div className="p-5 pt-0 sm:pt-5   text-textcolor">
         <Link href={`/products/${id}`}>
           <h3 className="sm:text-xl text-[20px] font-medium">{name}</h3>
-          <p className="sm:text-3xl font-semibold sn:mt-2 mt-1">${price}</p>
+          <p className="sm:text-3xl font-semibold sn:mt-2 mt-1">₹{price}</p>
         </Link>
       </div>
     </div>

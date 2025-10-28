@@ -51,7 +51,7 @@ export default function Navbar() {
       <div className="relative mx-auto max-w-6xl sm:px-4 px-2 sm:py-3 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="tracking-wide font-bold text-lg">
-          FURNITURE
+          NANAKSAAR
         </Link>
 
         {/* Desktop Navigation */}
@@ -237,7 +237,7 @@ export default function Navbar() {
                           {item.name}
                         </p>
                         <p className="text-xs text-gray-500">
-                          ${item.price.toFixed(2)}
+                          ₹{item.price.toFixed(2)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -280,7 +280,7 @@ export default function Navbar() {
                     Subtotal
                   </span>
                   <span className="font-bold text-lg">
-                    ${totalPrice.toFixed(2)}
+                    ₹{totalPrice.toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-4 flex gap-2">
