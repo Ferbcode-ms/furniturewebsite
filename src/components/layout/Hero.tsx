@@ -141,7 +141,7 @@ const Hero = () => {
             className="sm:ml-20 my-10 sm:my-20 sm:mb-30 font-semibold text-[60px] sm:text-[130px] sm:leading-[150px] text-[#f4f0ea] overflow-hidden"
             ref={HeadingRef}
           >
-            NEW NANAKSAR ART GALLERY
+            ART GALLERY
           </div>
 
           {/* Paragraph */}

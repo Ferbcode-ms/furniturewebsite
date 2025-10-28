@@ -51,7 +51,7 @@ export default function Navbar() {
       <div className="relative mx-auto max-w-6xl sm:px-4 px-2 sm:py-3 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="tracking-wide font-bold text-lg">
-          NANAKSAAR
+          ART GALLERY
         </Link>
 
         {/* Desktop Navigation */}

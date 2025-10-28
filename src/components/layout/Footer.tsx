@@ -35,7 +35,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="text-center">
           <h2 className="text-4xl sm:text-9xl m-10 sm:p-20 sm:m-20 my-50 tracking-tigh ">
-            NANAKSAAR ART GALLERY
+            ART GALLERY
           </h2>
         </div>
         {/* Bottom bar */}
