@@ -119,7 +119,7 @@ export default function AboutPage() {
           </p>
 
           <div className="ml-4">
-            <Link href="#trending">
+            <Link href="/about">
               <AnimatedButton
                 label="ABOUT US"
                 className="text-[--textcolor] border-2 px-4 py-2"

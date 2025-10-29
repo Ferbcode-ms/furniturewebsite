@@ -8,7 +8,10 @@ import { ShoppingCart, LayoutDashboard } from "lucide-react";
 import AnimatedButton from "@/components/AnimatedButton";
 import Image from "next/image";
 
-const navLinks = [{ href: "/", label: "Home" }];
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+];
 
 export default function Navbar() {
   const { state, dispatch, totalPrice } = useCart();
@@ -47,7 +50,7 @@ export default function Navbar() {
   if (!mounted) return null;
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-[#f4f0ea] p-0 sm:p-2 border-b border-gray-200">
+    <header className="fixed top-0 w-full z-50 bg-[#f4f0ea] p-0 sm:p-2 border-b border-2 border-gray-300">
       <div className="relative mx-auto max-w-6xl sm:px-4 px-2 sm:py-3 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="tracking-wide font-bold text-lg">
@@ -131,16 +134,18 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <div
         className={`fixed inset-0 z-40 flex flex-col bg-[#f4f0ea] transition-transform duration-500 ease-in-out ${
-          openMobile ? "translate-y-0" : "-translate-y-full"
+          openMobile ? "translate-x-0 " : "translate-x-full "
         }`}
       >
-        <nav className="flex flex-col items-start mx-auto justify-center h-full gap-8 text-3xl font-semibold">
+        <nav className="flex flex-col items-start mx-auto justify-center h-full gap-8 text-3xl font-semibold px-8">
+          <p>menu</p>
+          <div className="h-0.5 w-70 bg-black/20"></div>
           {navLinks.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpenMobile(false)}
-              className="hover:text-gray-700 transition-colors"
+              className="hover:translate-x-1 transition-all"
             >
               {l.label}
             </Link>
@@ -148,7 +153,7 @@ export default function Navbar() {
           <Link
             href="/products"
             onClick={() => setOpenMobile(false)}
-            className="hover:text-gray-700 transition-colors"
+            className="hover:translate-x-1 transition-all"
           >
             Products
           </Link>
@@ -156,7 +161,7 @@ export default function Navbar() {
             <Link
               href="/admin"
               onClick={() => setOpenMobile(false)}
-              className="hover:text-gray-700 transition-colors"
+              className="hover:translate-x-1 transition-all"
             >
               Dashboard
             </Link>
@@ -164,7 +169,7 @@ export default function Navbar() {
             <Link
               href="/admin/login"
               onClick={() => setOpenMobile(false)}
-              className="hover:text-gray-700 transition-colors"
+              className="hover:translate-x-1 transition-all"
             >
               Login
             </Link>
