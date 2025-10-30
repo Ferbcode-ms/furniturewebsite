@@ -150,8 +150,7 @@ export default function AdminOrdersPage() {
           s + Number(it.price) * Number(it.quantity),
         0
       );
-    const shipping = o.totals?.shipping ?? 0;
-    const grand = o.totals?.grandTotal ?? o.total ?? subtotal + shipping;
+    const grand = o.totals?.grandTotal ?? o.total ?? subtotal;
 
     const win = window.open("", "PRINT", "width=900,height=650");
     if (!win) return;
@@ -214,9 +213,6 @@ export default function AdminOrdersPage() {
                     <tr><td>Subtotal</td><td style="text-align:right">₹{Number(
                       subtotal
                     ).toFixed(2)}</td></tr>
-                    <tr><td>Shipping</td><td style="text-align:right">₹{Number(
-                      shipping
-                    ).toFixed(2)}</td></tr>
                     <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>₹{Number(
                       grand
                     ).toFixed(2)}</strong></td></tr>
@@ -252,8 +248,8 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <Container className="sm:m-20 m-15 sm:pt-8 lg:pt-10">
-      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight sm:ml-20 ml-5">
+    <Container className="sm:m-20 sm:mx-10 m-15 sm:pt-8 lg:pt-10">
+      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight sm:ml-20 ml-5">
         Orders
       </h1>
       {isLoading && (
@@ -278,7 +274,7 @@ export default function AdminOrdersPage() {
             <div className="mb-3 flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => handleFilterChange("all")}
-                className={`px-3 py-1.5 text-sm rounded-md border ${
+                className={`px-3 py-1.5 text-sm rounded-md border cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300 ${
                   dateFilter === "all" ? "bg-black text-white" : "bg-white"
                 }`}
               >
@@ -286,7 +282,7 @@ export default function AdminOrdersPage() {
               </button>
               <button
                 onClick={() => handleFilterChange("today")}
-                className={`px-3 py-1.5 text-sm rounded-md border ${
+                className={`px-3 py-1.5 text-sm rounded-md border cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300 ${
                   dateFilter === "today" ? "bg-black text-white" : "bg-white"
                 }`}
               >
@@ -294,7 +290,7 @@ export default function AdminOrdersPage() {
               </button>
               <div className="mx-2 h-5 w-px bg-neutral-200" />
               <button
-                className="px-3 py-1.5 text-sm rounded-md border"
+                className="px-3 py-1.5 text-sm rounded-md border cursor-pointer transition hover:bg-green-100 active:bg-green-200"
                 onClick={() => {
                   const todayPending = filteredOrders.filter((o: Order) => {
                     return (o.status || "pending") === "pending";
@@ -308,7 +304,7 @@ export default function AdminOrdersPage() {
                 Download Today Pending Items
               </button>
               <button
-                className="px-3 py-1.5 text-sm rounded-md border"
+                className="px-3 py-1.5 text-sm rounded-md border cursor-pointer transition hover:bg-green-100 active:bg-green-200"
                 onClick={() => {
                   downloadItemsCsvFor(
                     filteredOrders,
@@ -401,13 +397,13 @@ export default function AdminOrdersPage() {
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button
-                            className="rounded-lg border px-3 py-1 text-sm"
+                            className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-blue-100 active:bg-blue-200"
                             onClick={() => printInvoice(o)}
                           >
                             Print invoice
                           </button>
                           <button
-                            className="rounded-lg border px-3 py-1 text-sm"
+                            className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-green-100 active:bg-green-200"
                             onClick={() =>
                               downloadItemsCsvFor(
                                 [o],
@@ -530,7 +526,7 @@ export default function AdminOrdersPage() {
                                 toast.error(msg);
                               }
                             }}
-                            className="flex-1 rounded-lg border px-3 py-2"
+                            className="flex-1 rounded-lg border px-3 py-2 cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
                           >
                             <option value="pending">pending</option>
                             <option value="forward">forward</option>
@@ -576,16 +572,10 @@ export default function AdminOrdersPage() {
                             ₹{o.totals?.subtotal?.toFixed?.(2) || "-"}
                           </span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Shipping</span>
-                          <span>
-                            ₹{o.totals?.shipping?.toFixed?.(2) || "-"}
-                          </span>
-                        </div>
                         <div className="flex justify-between font-semibold text-sm sm:text-base border-t pt-2 mt-2">
                           <span>Total</span>
                           <span>
-                            $
+                            ₹
                             {o.totals?.grandTotal?.toFixed?.(2) ||
                               o.total?.toFixed?.(2) ||
                               "-"}

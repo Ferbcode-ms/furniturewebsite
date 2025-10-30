@@ -12,8 +12,9 @@ export default function OrderPage() {
 
   const items = state.items;
   const subtotal = useMemo(() => totalPrice, [totalPrice]);
-  const shipping = useMemo(() => (subtotal > 0 ? 25 : 0), [subtotal]);
-  const grandTotal = useMemo(() => subtotal + shipping, [subtotal, shipping]);
+  // Shipping fee calculation removed
+  // Grand total is only the subtotal now
+  const grandTotal = useMemo(() => subtotal, [subtotal]);
 
   function validate(form: FormData) {
     const newErrors: Record<string, string> = {};
@@ -56,7 +57,8 @@ export default function OrderPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          totals: { subtotal, shipping, grandTotal },
+          // Only send subtotal & grandTotal (equal), do not send shipping
+          totals: { subtotal, grandTotal },
           customer,
         }),
       });
@@ -74,8 +76,8 @@ export default function OrderPage() {
   }
 
   return (
-    <Container className="p-16 m-10 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
-      <h1 className="text-2xl ml-3 sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+    <Container className="p-2 sm:p-15 mt-15 m-10 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
+      <h1 className="text-2xl ml-3 sm:text-3xl lg:text-4xl font-bold tracking-tight">
         Checkout
       </h1>
 

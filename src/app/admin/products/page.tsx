@@ -229,7 +229,7 @@ export default function AdminProductsPage() {
 
   return (
     <Container className="sm:my-25 my-15">
-      <h1 className="text-3xl font-extrabold tracking-tight sm:ml-10 ml-5">
+      <h1 className="text-3xl font-bold tracking-tight sm:ml-10 ml-5">
         Products
       </h1>
       {!data && (
@@ -327,7 +327,7 @@ export default function AdminProductsPage() {
                 <button
                   onClick={addCategoryInline}
                   type="button"
-                  className="rounded-lg border px-4 py-2 text-sm"
+                  className="rounded-lg border px-4 py-2 text-sm cursor-pointer transition hover:bg-green-100 active:bg-green-200"
                 >
                   Add
                 </button>
@@ -444,7 +444,7 @@ export default function AdminProductsPage() {
           <div className="flex gap-3">
             <button
               type="submit"
-              className="px-5 py-2 text-sm rounded-lg bg-black text-white"
+              className="px-5 py-2 text-sm rounded-lg bg-black text-white cursor-pointer transition hover:bg-gray-900 active:bg-gray-800"
             >
               {editingId ? "Save Changes" : "Add"}
             </button>
@@ -452,7 +452,7 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="px-5 py-2 text-sm rounded-lg border"
+                className="px-5 py-2 text-sm rounded-lg border cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
               >
                 Cancel
               </button>
@@ -519,13 +519,13 @@ export default function AdminProductsPage() {
                 <td className="py-2 pr-4">
                   <div className="inline-flex gap-2">
                     <button
-                      className="rounded-lg border px-3 py-1 text-sm"
+                      className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
                       onClick={() => edit(p)}
                     >
                       Edit
                     </button>
                     <button
-                      className="rounded-lg border px-3 py-1 text-sm"
+                      className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-red-100 active:bg-red-200"
                       onClick={() => remove(p._id)}
                     >
                       Delete

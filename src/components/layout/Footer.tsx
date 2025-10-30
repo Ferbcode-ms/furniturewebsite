@@ -10,7 +10,6 @@ export default function Footer() {
         <div className="p-6 font-bold flex justify-between gap-10">
           {/* Shop */}
           <div>
-            <h3 className="">Shop</h3>
             <ul className="">
               <li>
                 <Link href="/products" className="t">
@@ -26,9 +25,22 @@ export default function Footer() {
           </div>
 
           <div className="">
-            <p>INSTAGRAM</p>
-            <p>FACEBOOK</p>
-            <p>TWITTER</p>
+            <Link
+              href={
+                "https://www.instagram.com/ravinder_singh_jagraon?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              }
+            >
+              {" "}
+              <p>INSTAGRAM</p>
+            </Link>
+            <Link href={"https://www.youtube.com/@ravinderfiberartjagraon9583"}>
+              {" "}
+              <p>YOUTUBE</p>
+            </Link>
+            <Link href={"https://www.facebook.com/ravinder.devgan.14/"}>
+              {" "}
+              <p>FACEBOOK</p>
+            </Link>
           </div>
         </div>
 
@@ -39,7 +51,7 @@ export default function Footer() {
           </h2>
         </div>
         {/* Bottom bar */}
-        <div className="flex justify-between p-2 sm:p-6 bg-black/30 text-sm ">
+        <div className="flex justify-between p-2 sm:p-6 bg-black/30 sm:text-sm text-[12px] ">
           <p>© {new Date().getFullYear()} Furniture. All rights reserved.</p>
           <p>MADE BY : FERBCODE.MS</p>
         </div>

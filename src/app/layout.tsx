@@ -21,9 +21,9 @@ const displayFont = Anton({
 });
 
 export const metadata: Metadata = {
-  title: "Nanaksaar Art Gallery",
+  title: "Ravinder fiber art",
   description:
-    "Nanaksaar Art Gallery is a platform for artists to showcase their work and connect with other artists and art lovers.",
+    "Ravinder fiber ar is a platform for artists to showcase their work and connect with other artists and art lovers.",
 };
 
 export default function RootLayout({

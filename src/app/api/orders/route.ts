@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const db = await getDb();
     const doc = {
       items,
-      totals,
+      totals: { subtotal: totals?.subtotal, grandTotal: totals?.grandTotal },
       customer,
       userEmail: customer.email,
       total: totals?.grandTotal ?? null,

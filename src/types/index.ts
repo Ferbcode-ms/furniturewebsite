@@ -80,7 +80,6 @@ export interface Order {
   userEmail?: string;
   totals?: {
     subtotal?: number;
-    shipping?: number;
     grandTotal?: number;
   };
   createdAt: string;

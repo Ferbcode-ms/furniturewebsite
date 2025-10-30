@@ -116,8 +116,8 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <Container className="sm:m-30 m-15">
-      <h1 className="text-3xl font-extrabold tracking-tight sm:ml-20 ml-5">
+    <Container className="sm:m-30 sm:mx-10 m-15">
+      <h1 className="text-3xl font-bold tracking-tight sm:ml-20 ml-5">
         Categories
       </h1>
       {!data && (
@@ -204,7 +204,7 @@ export default function AdminCategoriesPage() {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="px-5 py-2 text-sm rounded-lg bg-black text-white"
+            className="px-5 py-2 text-sm rounded-lg bg-black text-white cursor-pointer transition hover:bg-gray-900 active:bg-gray-800"
           >
             {editingId ? "Save Changes" : "Add"}
           </button>
@@ -212,7 +212,7 @@ export default function AdminCategoriesPage() {
             <button
               type="button"
               onClick={cancelEdit}
-              className="px-5 py-2 text-sm rounded-lg border"
+              className="px-5 py-2 text-sm rounded-lg border cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
             >
               Cancel
             </button>
@@ -268,13 +268,13 @@ export default function AdminCategoriesPage() {
                       <td className="py-3 pr-4">
                         <div className="inline-flex gap-2">
                           <button
-                            className="rounded-lg border px-3 py-1 text-sm"
+                            className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
                             onClick={() => edit(mainCategory)}
                           >
                             Edit
                           </button>
                           <button
-                            className="rounded-lg border px-3 py-1 text-sm"
+                            className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-red-100 active:bg-red-200"
                             onClick={() => remove(mainCategory._id)}
                           >
                             Delete
@@ -307,13 +307,13 @@ export default function AdminCategoriesPage() {
                         <td className="py-2 pr-4">
                           <div className="inline-flex gap-2">
                             <button
-                              className="rounded-lg border px-3 py-1 text-sm"
+                              className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-neutral-200 active:bg-neutral-300"
                               onClick={() => edit(subCategory)}
                             >
                               Edit
                             </button>
                             <button
-                              className="rounded-lg border px-3 py-1 text-sm"
+                              className="rounded-lg border px-3 py-1 text-sm cursor-pointer transition hover:bg-red-100 active:bg-red-200"
                               onClick={() => remove(subCategory._id)}
                             >
                               Delete
