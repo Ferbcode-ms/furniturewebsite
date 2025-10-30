@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ShoppingCart, LayoutDashboard } from "lucide-react";
 import AnimatedButton from "@/components/AnimatedButton";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -113,17 +114,17 @@ export default function Navbar() {
             aria-label="Toggle menu"
           >
             <span
-              className={`block h-0.5 w-full bg-black transition-transform duration-300 ${
+              className={`block h-0.5 w-full bg-black transition-transform duration-300 rounded-full ${
                 openMobile ? "rotate-45 translate-y-2" : ""
               }`}
             ></span>
             <span
-              className={`block h-0.5 w-full bg-black transition-opacity duration-300 ${
+              className={`block h-0.5 w-full bg-black transition-opacity duration-300 rounded-full ${
                 openMobile ? "opacity-0" : "opacity-100"
               }`}
             ></span>
             <span
-              className={`block h-0.5 w-full bg-black transition-transform duration-300 ${
+              className={`block h-0.5 w-full bg-black transition-transform duration-300 rounded-full ${
                 openMobile ? "-rotate-45 -translate-y-2" : ""
               }`}
             ></span>
@@ -132,50 +133,82 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={`fixed inset-0 z-40 flex flex-col bg-[#f4f0ea] transition-transform duration-500 ease-in-out ${
-          openMobile ? "translate-x-0 " : "translate-x-full "
-        }`}
-      >
-        <nav className="flex flex-col items-start mx-auto justify-center h-full gap-8 text-3xl font-semibold px-8">
-          <p>menu</p>
-          <div className="h-0.5 w-70 bg-black/20"></div>
-          {navLinks.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
+      <AnimatePresence>
+        {openMobile && (
+          <>
+            <motion.div
               onClick={() => setOpenMobile(false)}
-              className="hover:translate-x-1 transition-all"
+              className="fixed inset-0 z-30 bg-black/30"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+            />
+
+            <motion.div
+              initial={{
+                x: "100%",
+                opacity: 0.85,
+                borderTopLeftRadius: 999,
+                borderBottomLeftRadius: 999,
+              }}
+              animate={{
+                x: 0,
+                opacity: 1,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+              }}
+              exit={{
+                x: "100%",
+                opacity: 0.85,
+                borderTopLeftRadius: 999,
+                borderBottomLeftRadius: 999,
+              }}
+              transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
+              className="fixed inset-0 z-40 flex flex-col bg-[#f4f0ea]"
             >
-              {l.label}
-            </Link>
-          ))}
-          <Link
-            href="/products"
-            onClick={() => setOpenMobile(false)}
-            className="hover:translate-x-1 transition-all"
-          >
-            Products
-          </Link>
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              onClick={() => setOpenMobile(false)}
-              className="hover:translate-x-1 transition-all"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <Link
-              href="/admin/login"
-              onClick={() => setOpenMobile(false)}
-              className="hover:translate-x-1 transition-all"
-            >
-              Login
-            </Link>
-          )}
-        </nav>
-      </div>
+              <nav className="flex flex-col items-start mx-auto justify-center h-full gap-8 text-3xl font-semibold px-8">
+                <p>menu</p>
+                <div className="h-0.5 w-70 bg-black/20"></div>
+                {navLinks.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setOpenMobile(false)}
+                    className="hover:translate-x-1 transition-all"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                <Link
+                  href="/products"
+                  onClick={() => setOpenMobile(false)}
+                  className="hover:translate-x-1 transition-all"
+                >
+                  Products
+                </Link>
+                {isAdmin ? (
+                  <Link
+                    href="/admin"
+                    onClick={() => setOpenMobile(false)}
+                    className="hover:translate-x-1 transition-all"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setOpenMobile(false)}
+                    className="hover:translate-x-1 transition-all"
+                  >
+                    Login
+                  </Link>
+                )}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Cart UI */}
       <div

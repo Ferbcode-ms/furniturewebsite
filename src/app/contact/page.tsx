@@ -8,16 +8,46 @@ import { toast } from "sonner";
 export default function OrderPage() {
   const { state, totalPrice, dispatch } = useCart();
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const items = state.items;
   const subtotal = useMemo(() => totalPrice, [totalPrice]);
   const shipping = useMemo(() => (subtotal > 0 ? 25 : 0), [subtotal]);
   const grandTotal = useMemo(() => subtotal + shipping, [subtotal, shipping]);
 
+  function validate(form: FormData) {
+    const newErrors: Record<string, string> = {};
+    const name = (form.get("fullName") || "").toString().trim();
+    const email = (form.get("email") || "").toString().trim();
+    const phone = (form.get("phone") || "").toString().trim();
+    const address = (form.get("addressLine1") || "").toString().trim();
+    const city = (form.get("city") || "").toString().trim();
+    const state = (form.get("state") || "").toString().trim();
+    const postalCode = (form.get("postalCode") || "").toString().trim();
+    const country = (form.get("country") || "").toString().trim();
+
+    if (!name) newErrors.fullName = "Name is required.";
+    if (!email) newErrors.email = "Email is required.";
+    else if (!/^\S+@\S+\.\S+$/.test(email))
+      newErrors.email = "Invalid email address.";
+    if (!phone) newErrors.phone = "Phone number is required.";
+    else if (!/^\+?\d{10,}$/.test(phone.replace(/\s+/g, "")))
+      newErrors.phone = "Phone must be valid.";
+    if (!address) newErrors.addressLine1 = "Address is required.";
+    if (!city) newErrors.city = "City is required.";
+    if (!state) newErrors.state = "State/Province is required.";
+    if (!postalCode) newErrors.postalCode = "Postal code is required.";
+    if (!country) newErrors.country = "Country is required.";
+    return newErrors;
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formElement = e.currentTarget;
     const form = new FormData(formElement);
+    const errorsObj = validate(form);
+    setErrors(errorsObj);
+    if (Object.keys(errorsObj).length) return;
     const customer = Object.fromEntries(form.entries());
     try {
       setSubmitting(true);
@@ -35,6 +65,7 @@ export default function OrderPage() {
       toast.success("Order placed successfully! Thank you.");
       dispatch({ type: "CLEAR" });
       formElement?.reset();
+      setErrors({});
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -43,7 +74,7 @@ export default function OrderPage() {
   }
 
   return (
-    <Container className="py-6 m-10 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
+    <Container className="p-16 m-10 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
       <h1 className="text-2xl ml-3 sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
         Checkout
       </h1>
@@ -124,13 +155,14 @@ export default function OrderPage() {
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>₹{shipping.toFixed(2)}</span>
-              </div>
               <div className="flex justify-between font-semibold text-base">
                 <span>Total</span>
                 <span>₹{grandTotal.toFixed(2)}</span>
+              </div>
+              <div className="text-[13px] mt-2 text-neutral-600 italic">
+                <span>
+                  Shipping fee will be communicated to you via phone call.
+                </span>
               </div>
             </div>
           </div>
@@ -145,10 +177,16 @@ export default function OrderPage() {
                 <span className="mb-1 block text-neutral-700">Full name</span>
                 <input
                   name="fullName"
-                  required
                   placeholder="John Doe"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.fullName ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.fullName && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.fullName}
+                  </div>
+                )}
               </label>
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">
@@ -157,10 +195,16 @@ export default function OrderPage() {
                 <input
                   name="email"
                   type="email"
-                  required
                   placeholder="john@example.com"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.email ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.email && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.email}
+                  </div>
+                )}
               </label>
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">
@@ -168,10 +212,16 @@ export default function OrderPage() {
                 </span>
                 <input
                   name="phone"
-                  required
                   placeholder="+1 555 000 1111"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.phone ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.phone && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.phone}
+                  </div>
+                )}
               </label>
             </div>
           </div>
@@ -184,10 +234,16 @@ export default function OrderPage() {
               </span>
               <input
                 name="addressLine1"
-                required
                 placeholder="123 Main St"
-                className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                  errors.addressLine1 ? "border-red-500" : ""
+                }`}
               />
+              {errors.addressLine1 && (
+                <div className="text-red-500 text-xs mt-1">
+                  {errors.addressLine1}
+                </div>
+              )}
             </label>
             <label className="text-sm">
               <span className="mb-1 block text-neutral-700">
@@ -204,10 +260,14 @@ export default function OrderPage() {
                 <span className="mb-1 block text-neutral-700">City</span>
                 <input
                   name="city"
-                  required
                   placeholder="City"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.city ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.city && (
+                  <div className="text-red-500 text-xs mt-1">{errors.city}</div>
+                )}
               </label>
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">
@@ -215,10 +275,16 @@ export default function OrderPage() {
                 </span>
                 <input
                   name="state"
-                  required
                   placeholder="State or province"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.state ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.state && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.state}
+                  </div>
+                )}
               </label>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -226,19 +292,31 @@ export default function OrderPage() {
                 <span className="mb-1 block text-neutral-700">Postal code</span>
                 <input
                   name="postalCode"
-                  required
                   placeholder="ZIP / Postal code"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.postalCode ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.postalCode && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.postalCode}
+                  </div>
+                )}
               </label>
               <label className="text-sm">
                 <span className="mb-1 block text-neutral-700">Country</span>
                 <input
                   name="country"
-                  required
                   placeholder="Country"
-                  className="h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 focus:ring-black/10 text-base"
+                  className={`h-11 sm:h-12 w-full rounded-xl border px-4 focus:outline-none focus:ring-2 text-base ${
+                    errors.country ? "border-red-500" : ""
+                  }`}
                 />
+                {errors.country && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.country}
+                  </div>
+                )}
               </label>
             </div>
           </div>
