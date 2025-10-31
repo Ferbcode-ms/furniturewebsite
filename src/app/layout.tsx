@@ -18,6 +18,7 @@ const displayFont = Anton({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-display",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${manrope.className} ${displayFont.variable} antialiased bg-[#f4f0ea] text-[#4d3d30] uppercase`}
       >

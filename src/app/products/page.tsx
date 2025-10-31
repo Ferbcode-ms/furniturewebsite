@@ -30,11 +30,13 @@ export default function ProductsPage() {
   const [hierarchicalCategories, setHierarchicalCategories] = useState<
     HierarchicalCategory[]
   >([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loadingCats, setLoadingCats] = useState<boolean>(true);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const productsPerPage = 8;
+  const [totalProducts, setTotalProducts] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     async function loadCats() {
@@ -50,89 +52,44 @@ export default function ProductsPage() {
     loadCats();
   }, []);
 
-  // Load all products once and filter client-side for better performance
+  // Load products from server with pagination and query params
   useEffect(() => {
     async function loadProducts() {
       setLoadingProducts(true);
       try {
-        const res = await fetch("/api/products");
-        const data: { products: Product[] } = await res.json();
-        setAllProducts(data.products || []);
+        const params = new URLSearchParams();
+        if (selected && selected !== "All") params.set("category", selected);
+        if (searchQuery.trim()) params.set("q", searchQuery.trim());
+        if (sortBy) params.set("sort", sortBy);
+        params.set("page", String(currentPage));
+        params.set("limit", String(productsPerPage));
+        const res = await fetch(`/api/products?${params.toString()}`);
+        const data: {
+          products: Product[];
+          total?: number;
+          totalPages?: number;
+          page?: number;
+        } = await res.json();
+        setProducts(data.products || []);
+        setTotalProducts(data.total || 0);
+        setTotalPages(data.totalPages || 1);
       } catch (error) {
         console.error("Failed to load products:", error);
-        setAllProducts([]);
+        setProducts([]);
+        setTotalProducts(0);
+        setTotalPages(1);
       } finally {
         setLoadingProducts(false);
       }
     }
     loadProducts();
-  }, []);
+  }, [selected, searchQuery, sortBy, currentPage]);
 
   // Memoized filtered and sorted products
-  const filteredProducts = useMemo(() => {
-    let filtered = allProducts;
-
-    // Filter by category
-    if (selected !== "All") {
-      filtered = filtered.filter((product) => {
-        // Check if the selected category is a main category
-        const mainCategory = hierarchicalCategories.find(
-          (cat) => cat.name === selected
-        );
-
-        if (
-          mainCategory &&
-          mainCategory.subCategories &&
-          mainCategory.subCategories.length > 0
-        ) {
-          // If it's a main category with subcategories, include products from main category AND all subcategories
-          const subCategoryNames = mainCategory.subCategories;
-          return (
-            product.category === selected ||
-            subCategoryNames.includes(product.category)
-          );
-        } else {
-          // If it's a subcategory or main category without subcategories, match exactly
-          return product.category === selected;
-        }
-      });
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(query) ||
-          product.description?.toLowerCase().includes(query) ||
-          product.category?.toLowerCase().includes(query)
-      );
-    }
-
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "price":
-          return a.price - b.price;
-        case "newest":
-        default:
-          return (
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime()
-          );
-      }
-    });
-
-    return filtered;
-  }, [allProducts, selected, searchQuery, sortBy, hierarchicalCategories]);
-
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  // Server-provided pagination values
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+  const paginatedProducts = products;
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -343,7 +300,7 @@ export default function ProductsPage() {
       )}
 
       {/* Enhanced Empty State */}
-      {!loadingProducts && filteredProducts.length === 0 && (
+      {!loadingProducts && products.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -373,12 +330,11 @@ export default function ProductsPage() {
       )}
 
       {/* Results Count and Pagination */}
-      {!loadingProducts && filteredProducts.length > 0 && (
+      {!loadingProducts && products.length > 0 && (
         <>
           <div className="mt-8 text-center text-sm text-neutral-500">
-            Showing {startIndex + 1}-
-            {Math.min(endIndex, filteredProducts.length)} of{" "}
-            {filteredProducts.length} products
+            Showing {startIndex + 1}-{Math.min(endIndex, totalProducts)} of{" "}
+            {totalProducts} products
           </div>
 
           {/* Pagination Controls */}
