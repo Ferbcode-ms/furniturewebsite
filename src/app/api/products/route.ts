@@ -36,8 +36,10 @@ export async function GET(req: NextRequest) {
               .toArray();
             const names = [
               validatedParams.category,
-              ...children.map((c: any) => c.name),
-            ].filter(Boolean);
+              ...children
+                .map((c: { name?: string }) => c.name || "")
+                .filter((n: string) => n.length > 0),
+            ];
             query.category = { $in: names };
           } else {
             // Subcategory selected: filter strictly to this subcategory

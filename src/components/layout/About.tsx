@@ -20,8 +20,13 @@ export default function AboutPage() {
     let ctx: gsap.Context | null = null;
     (async () => {
       try {
-        if (typeof document !== "undefined" && (document as any).fonts?.ready) {
-          await (document as any).fonts.ready;
+        if (typeof document !== "undefined") {
+          const d = document as unknown as Document & {
+            fonts?: { ready: Promise<void> };
+          };
+          if (d.fonts?.ready) {
+            await d.fonts.ready;
+          }
         }
       } catch {}
       if (cancelled) return;

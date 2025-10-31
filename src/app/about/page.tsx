@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -11,9 +11,9 @@ export default function AboutPage() {
             ABOUT us
           </h1>
           <div className="flex flex-col justify-center items-center sm:flex-row gap-4 mt-7   ">
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="About logo"
               width={100}
               height={100}
               className=" h-50 w-50 sm:w-100 sm:h-100 object-cover rounded-3xl hover:scale-105 transition-all duration-300 shadow-accent"
@@ -38,9 +38,9 @@ export default function AboutPage() {
             Successfull
           </div>
           <div>
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="About image"
               width={100}
               height={100}
               className="w-90 h-90 -rotate-6 object-cover rounded-3xl hover:rotate-0  transition-all duration-300 shadow-xl"
@@ -69,9 +69,9 @@ export default function AboutPage() {
           </div>
 
           <div className="flex-1/2 mx-0 sm:mx-10">
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="Story image"
               width={100}
               height={100}
               className="w-150 h-90 object-cover rounded-3xl hover:scale-105 transition-all duration-300 shadow-accent"
@@ -92,9 +92,9 @@ export default function AboutPage() {
           </div>
 
           <div className="flex-1/2 mx-0 sm:mx-10">
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="Story image"
               width={100}
               height={100}
               className="w-150 h-90 object-cover rounded-3xl hover:scale-105 transition-all duration-300 shadow-accent"
@@ -114,9 +114,9 @@ export default function AboutPage() {
           </div>
 
           <div className="flex-1/2 mx-0 sm:mx-10">
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="Story image"
               width={100}
               height={100}
               className="w-150 h-90 object-cover rounded-3xl hover:scale-105 transition-all duration-300 shadow-accent"
@@ -136,9 +136,9 @@ export default function AboutPage() {
           </div>
 
           <div className="flex-1/2 mx-0 sm:mx-10">
-            <img
+            <Image
               src="https://res.cloudinary.com/duk94ehtq/image/upload/v1761803241/a-minimalist-logo-design-featuring-an-el_8121Zr-jSHSHRvsQymAUyQ_-CNX5oqWQ_G2PeXUx0E9Bg_e9cmg6.jpg"
-              alt=""
+              alt="Story image"
               width={100}
               height={100}
               className="w-150 h-90 object-cover rounded-3xl hover:scale-105 transition-all duration-300 shadow-accent"

@@ -3,7 +3,7 @@
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
 import ProductGridSkeleton from "@/components/ProductGridSkeleton";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import SimpleLoader from "@/components/SimpleLoader";
 import { Search } from "lucide-react";

@@ -114,7 +114,7 @@ export default function Home() {
       return (
         <div className="overflow-x-auto pb-6 hide-scrollbar">
           <div className="flex flex-col sm:flex-row gap-6 px-6">
-            {categories.slice(0, 4).map((category, index) => (
+            {categories.slice(0, 4).map((category) => (
               <div
                 key={category.name}
                 className="flex-shrink-0 w-[85vw] min-h-[60vh] flex items-center"
@@ -170,7 +170,7 @@ export default function Home() {
           className="categories-track flex gap-10 px-10 will-change-transform"
           style={{ width: `${categories.length * 100}vw` }}
         >
-          {categories.slice(0, 4).map((category, index) => (
+          {categories.slice(0, 4).map((category) => (
             <div
               key={category.name}
               className="category-item flex-shrink-0 w-[80vw] h-[100vh] flex items-center justify-center"

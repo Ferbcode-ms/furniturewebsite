@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, useState, useLayoutEffect } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
 import Link from "next/link";

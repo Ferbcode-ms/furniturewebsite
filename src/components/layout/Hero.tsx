@@ -6,7 +6,6 @@ import Image from "next/image";
 import AnimatedButton from "../AnimatedButton";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
-import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
@@ -25,8 +24,13 @@ const Hero = () => {
     let ctx1: gsap.Context | null = null;
     (async () => {
       try {
-        if (typeof document !== "undefined" && (document as any).fonts?.ready) {
-          await (document as any).fonts.ready;
+        if (typeof document !== "undefined") {
+          const d = document as unknown as Document & {
+            fonts?: { ready: Promise<void> };
+          };
+          if (d.fonts?.ready) {
+            await d.fonts.ready;
+          }
         }
       } catch {}
       if (cancelled) return;
